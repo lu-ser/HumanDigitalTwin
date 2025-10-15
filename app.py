@@ -47,6 +47,23 @@ def init_llm(_config):
     return LLMFactory.create(provider, llm_config, api_key)
 
 
+@st.cache_resource
+def init_triplet_graph(_config, _llm, _graph_version="v5_cascade_text_iot_aug"):
+    """Inizializza il grafo LangGraph per estrazione triplette."""
+    from src.agents.triplet_extraction_graph import TripletExtractionGraph
+
+    api_key = _config.get_env('GROQ_API_KEY')
+    mcp_config = _config.get_mcp_config()
+    mcp_url = f"http://{mcp_config.get('host')}:{mcp_config.get('port')}"
+
+    return TripletExtractionGraph(
+        llm_api_key=api_key,
+        llm_model=_llm.model,
+        mcp_base_url=mcp_url,
+        enable_logging=True  # Abilita logging Rich
+    )
+
+
 def main():
     """Main function per l'app Streamlit."""
 
@@ -64,6 +81,7 @@ def main():
     # Inizializza i componenti
     prompt_manager = init_prompt_manager()
     llm = init_llm(config)
+    triplet_graph = init_triplet_graph(config, llm)
 
     # Sidebar per la configurazione
     with st.sidebar:
@@ -89,36 +107,92 @@ def main():
 
     # Tab 1: Estrazione Triplette da Testo
     with tab1:
-        st.header("Estrazione Triplette da Testo")
-        st.write("Inserisci del testo per estrarre triplette RDF (soggetto, predicato, oggetto)")
+        st.header("Estrazione Triplette da Testo con LangGraph")
+        st.write("Estrazione multi-stage di triplette RDF con augmentation dati IoT")
 
-        text_input = st.text_area(
-            "Testo da analizzare:",
-            height=200,
-            placeholder="Inserisci qui il testo..."
+        # Scelta input: textbox o file JSON
+        input_mode = st.radio(
+            "Sorgente del testo:",
+            ["Textbox", "File JSON"],
+            horizontal=True
         )
 
-        if st.button("Estrai Triplette", key="extract_triplets"):
+        text_input = None
+
+        if input_mode == "Textbox":
+            text_input = st.text_area(
+                "Testo da analizzare:",
+                height=200,
+                placeholder="Inserisci qui il testo..."
+            )
+        else:
+            uploaded_file = st.file_uploader("Carica file JSON", type=['json'])
+            if uploaded_file:
+                try:
+                    json_data = json.load(uploaded_file)
+                    # Assume che il JSON abbia un campo "text" o simile
+                    text_input = json_data.get("text", json.dumps(json_data))
+                    st.text_area("Testo estratto:", text_input, height=150, disabled=True)
+                except Exception as e:
+                    st.error(f"Errore nel parsing del JSON: {str(e)}")
+
+        # Slider per chunk size
+        chunk_size = st.slider(
+            "Dimensione chunk (caratteri):",
+            min_value=200,
+            max_value=3000,
+            value=1000,
+            step=100
+        )
+
+        if st.button("Estrai Triplette con LangGraph", key="extract_triplets"):
             if text_input:
-                with st.spinner("Estrazione in corso..."):
+                with st.spinner("Estrazione multi-stage in corso..."):
                     try:
-                        # Costruisci i messaggi
-                        messages = prompt_manager.build_messages(
-                            'triplet_extraction',
-                            text=text_input
+                        # Esegui il grafo (recupera automaticamente i dati IoT dal MCP)
+                        result = triplet_graph.run(
+                            input_text=text_input,
+                            chunk_size=chunk_size
                         )
 
-                        # Genera la risposta
-                        response = llm.generate_with_history(messages)
+                        # Mostra risultati
+                        if result.get("error"):
+                            st.error(f"Errore: {result['error']}")
+                        else:
+                            st.success("Estrazione completata!")
 
-                        st.success("Estrazione completata!")
-                        st.subheader("Risultato:")
-                        st.code(response, language="json")
+                            # Triplette estratte
+                            triplets = result.get("triplets", [])
+                            st.subheader(f"Triplette estratte: {len(triplets)}")
+                            if triplets:
+                                st.json(triplets)
+
+                            # Triplette augmented
+                            augmented = result.get("augmented_triplets", [])
+                            if augmented:
+                                st.subheader(f"Triplette augmented (IoT): {len(augmented)}")
+                                st.json(augmented)
+
+                            # Triplette finali
+                            final = result.get("final_triplets", [])
+                            st.subheader(f"Totale triplette finali: {len(final)}")
+
+                            # Download JSON
+                            import json
+                            json_output = json.dumps(final, indent=2)
+                            st.download_button(
+                                label="Download triplette (JSON)",
+                                data=json_output,
+                                file_name="triplets.json",
+                                mime="application/json"
+                            )
 
                     except Exception as e:
                         st.error(f"Errore durante l'estrazione: {str(e)}")
+                        import traceback
+                        st.code(traceback.format_exc())
             else:
-                st.warning("Inserisci del testo prima di procedere")
+                st.warning("Inserisci del testo o carica un file JSON prima di procedere")
 
     # Tab 2: Dati IoT
     with tab2:

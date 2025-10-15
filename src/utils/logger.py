@@ -30,28 +30,50 @@ class AgentLogger:
         # Crea un run ID unico
         self.run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.log_file = self.log_dir / f"run_{self.run_id}.log"
+        self.html_file = self.log_dir / f"run_{self.run_id}.html"
 
-        # Console Rich
+        # Console Rich per stdout
         self.console = Console()
+
+        # Console Rich per file HTML
+        self.html_console = Console(
+            record=True,
+            width=120,
+            force_terminal=True,
+            force_interactive=False
+        )
 
         # Contatori
         self.llm_calls = 0
         self.tool_calls = 0
         self.mcp_requests = 0
 
-        # Scrivi header nel file
-        self._write_to_file(f"=== Agent Run Started: {self.run_id} ===\n")
-        self._write_to_file(f"Timestamp: {datetime.now().isoformat()}\n\n")
+        # Scrivi header nel file log
+        self._write_to_file(self._make_header())
 
         # Mostra banner
         self._show_banner()
+
+    def _make_header(self):
+        """Crea header strutturato per il file log."""
+        header = []
+        header.append("╔" + "═"*78 + "╗")
+        header.append("║" + " "*78 + "║")
+        header.append("║" + "    🤖 HUMAN DIGITAL TWIN - AGENT LOG".center(78) + "║")
+        header.append("║" + " "*78 + "║")
+        header.append("║" + f"    Run ID: {self.run_id}".ljust(78) + "║")
+        header.append("║" + f"    Timestamp: {datetime.now().isoformat()}".ljust(78) + "║")
+        header.append("║" + " "*78 + "║")
+        header.append("╚" + "═"*78 + "╝")
+        return "\n".join(header) + "\n\n"
 
     def _show_banner(self):
         """Mostra banner iniziale."""
         banner = Text()
         banner.append("Human Digital Twin Agent\n", style="bold cyan")
         banner.append(f"Run ID: {self.run_id}\n", style="dim")
-        banner.append(f"Log file: {self.log_file}", style="dim")
+        banner.append(f"Log file: {self.log_file}\n", style="dim")
+        banner.append(f"HTML file: {self.html_file}", style="dim")
 
         self.console.print(Panel(banner, box=box.DOUBLE, border_style="cyan"))
         self.console.print()
@@ -92,35 +114,97 @@ class AgentLogger:
         self.llm_calls += 1
         timestamp = datetime.now().strftime("%H:%M:%S")
 
-        # Console
-        self.console.print(f"[bold yellow][{timestamp}] LLM Call #{self.llm_calls}:[/bold yellow]")
-
+        # Console con Box
+        title = f"🤖 LLM CALL #{self.llm_calls}"
         if model_info:
-            info_text = f"Model: {model_info.get('model', 'N/A')} | Provider: {model_info.get('provider', 'N/A')}"
-            self.console.print(f"[dim]{info_text}[/dim]")
+            title += f" | {model_info.get('model', 'N/A')}"
+            if model_info.get('with_tools'):
+                title += f" [cyan](with {model_info.get('with_tools')} tools)[/cyan]"
 
-        # Mostra messaggi
-        self.console.print("[dim]Messages sent:[/dim]")
+        self.console.print(f"\n[bold yellow]{'='*80}[/bold yellow]")
+        self.console.print(f"[bold yellow]{title}[/bold yellow]")
+        self.console.print(f"[dim]{timestamp}[/dim]")
+        self.console.print(f"[bold yellow]{'='*80}[/bold yellow]\n")
+
+        # Mostra PROMPT (system + user messages)
+        self.console.print(Panel.fit(
+            "[bold cyan]📤 PROMPT[/bold cyan]",
+            border_style="cyan"
+        ))
+
         for msg in messages:
             role = msg.get('role', 'unknown')
             content = msg.get('content', '')
-            role_color = {"user": "blue", "assistant": "green", "system": "magenta"}.get(role, "white")
-            self.console.print(f"  [{role_color}]{role}:[/{role_color}] {content[:100]}...")
 
-        # Mostra risposta
-        self.console.print("[dim]Response:[/dim]")
-        self.console.print(Panel(response, border_style="yellow", box=box.ROUNDED))
+            if role == 'system':
+                self.console.print(Panel(
+                    content[:500] + ("..." if len(content) > 500 else ""),
+                    title="[magenta]SYSTEM MESSAGE[/magenta]",
+                    border_style="magenta",
+                    box=box.ROUNDED
+                ))
+            elif role == 'user':
+                self.console.print(Panel(
+                    content[:500] + ("..." if len(content) > 500 else ""),
+                    title="[blue]USER MESSAGE[/blue]",
+                    border_style="blue",
+                    box=box.ROUNDED
+                ))
+
         self.console.print()
 
-        # File
-        self._write_to_file(f"\n[{timestamp}] LLM CALL #{self.llm_calls}:\n")
+        # Aggiungi anche a html_console per HTML export
+        self.html_console.print(f"\n[bold yellow]{'='*80}[/bold yellow]")
+        self.html_console.print(f"[bold yellow]{title}[/bold yellow]")
+        self.html_console.print(f"[dim]{timestamp}[/dim]")
+        self.html_console.print(f"[bold yellow]{'='*80}[/bold yellow]\n")
+
+        for msg in messages:
+            role = msg.get('role', 'unknown')
+            content = msg.get('content', '')
+            if role == 'system':
+                self.html_console.print(Panel(
+                    content[:500] + ("..." if len(content) > 500 else ""),
+                    title="[magenta]SYSTEM MESSAGE[/magenta]",
+                    border_style="magenta",
+                    box=box.ROUNDED
+                ))
+            elif role == 'user':
+                self.html_console.print(Panel(
+                    content[:500] + ("..." if len(content) > 500 else ""),
+                    title="[blue]USER MESSAGE[/blue]",
+                    border_style="blue",
+                    box=box.ROUNDED
+                ))
+
+        # File .log con formato strutturato ASCII
+        log_content = []
+        log_content.append("\n" + "╔" + "═"*78 + "╗")
+        log_content.append("║" + f" 🤖 LLM CALL #{self.llm_calls}".ljust(78) + "║")
         if model_info:
-            self._write_to_file(f"Model: {json.dumps(model_info, indent=2)}\n")
-        self._write_to_file("Messages:\n")
-        self._write_to_file(json.dumps(messages, indent=2, ensure_ascii=False))
-        self._write_to_file("\n\nResponse:\n")
-        self._write_to_file(response)
-        self._write_to_file("\n" + "-" * 80 + "\n")
+            model_str = f"{model_info.get('model', 'N/A')}"
+            if model_info.get('with_tools'):
+                model_str += f" (with {model_info.get('with_tools')} tools)"
+            log_content.append("║" + f" Model: {model_str}".ljust(78) + "║")
+        log_content.append("║" + f" Time: {timestamp}".ljust(78) + "║")
+        log_content.append("╚" + "═"*78 + "╝\n")
+
+        # PROMPT section
+        log_content.append("┌─ 📤 PROMPT " + "─"*64 + "┐")
+        for msg in messages:
+            role = msg.get('role', 'unknown').upper()
+            content = msg.get('content', '')
+            log_content.append(f"│ [{role}]")
+            # Wrappa il contenuto
+            for line in content.split('\n')[:20]:  # Max 20 righe
+                if len(line) > 74:
+                    log_content.append(f"│ {line[:74]}...")
+                else:
+                    log_content.append(f"│ {line.ljust(76)}│")
+            log_content.append("│" + " "*76 + "│")
+        log_content.append("└" + "─"*78 + "┘\n")
+
+        self._write_to_file("\n".join(log_content))
 
     def log_tool_call(self, tool_name: str, tool_args: Dict[str, Any], tool_result: str):
         """
@@ -134,21 +218,27 @@ class AgentLogger:
         self.tool_calls += 1
         timestamp = datetime.now().strftime("%H:%M:%S")
 
-        # Console
-        self.console.print(f"[bold magenta][{timestamp}] Tool Call #{self.tool_calls}:[/bold magenta]")
+        # Console con separatore chiaro
+        self.console.print(f"\n[bold magenta]{'─'*80}[/bold magenta]")
+        self.console.print(f"[bold magenta]🔧 TOOL CALL #{self.tool_calls} | {tool_name}[/bold magenta]")
+        self.console.print(f"[dim]{timestamp}[/dim]")
+        self.console.print(f"[bold magenta]{'─'*80}[/bold magenta]\n")
 
-        # Crea tabella per gli argomenti
-        table = Table(title=f"Tool: {tool_name}", box=box.SIMPLE)
-        table.add_column("Argument", style="cyan")
-        table.add_column("Value", style="white")
+        # Mostra argomenti se presenti
+        if tool_args:
+            table = Table(title="Arguments", box=box.SIMPLE, show_header=True)
+            table.add_column("Parameter", style="cyan")
+            table.add_column("Value", style="white")
 
-        for key, value in tool_args.items():
-            table.add_row(key, str(value))
+            for key, value in tool_args.items():
+                table.add_row(key, str(value))
 
-        self.console.print(table)
+            self.console.print(table)
+        else:
+            self.console.print("[dim]No arguments[/dim]")
 
         # Mostra risultato
-        self.console.print("[dim]Result:[/dim]")
+        self.console.print("\n[bold cyan]Result:[/bold cyan]")
         try:
             # Prova a fare pretty print del JSON
             result_json = json.loads(tool_result)
@@ -161,11 +251,12 @@ class AgentLogger:
         self.console.print()
 
         # File
-        self._write_to_file(f"\n[{timestamp}] TOOL CALL #{self.tool_calls}:\n")
+        self._write_to_file(f"\n{'='*80}\n")
+        self._write_to_file(f"[{timestamp}] TOOL CALL #{self.tool_calls}:\n")
         self._write_to_file(f"Tool: {tool_name}\n")
         self._write_to_file(f"Arguments: {json.dumps(tool_args, indent=2)}\n")
         self._write_to_file(f"Result:\n{tool_result}\n")
-        self._write_to_file("-" * 80 + "\n")
+        self._write_to_file(f"{'='*80}\n")
 
     def log_mcp_request(self, method: str, endpoint: str, params: Optional[Dict] = None, response: Any = None):
         """
@@ -215,15 +306,54 @@ class AgentLogger:
         """
         timestamp = datetime.now().strftime("%H:%M:%S")
 
-        # Console
-        self.console.print(f"[bold green][{timestamp}] Agent Response:[/bold green]")
-        self.console.print(Panel(response, border_style="green", box=box.ROUNDED))
-        self.console.print()
+        # Console con separatore chiaro
+        self.console.print(f"\n[bold green]{'─'*80}[/bold green]")
+        self.console.print(Panel.fit(
+            "[bold green]📥 RESPONSE[/bold green]",
+            border_style="green"
+        ))
+        self.console.print(Panel(
+            response,
+            title=f"[green]Agent Response | {timestamp}[/green]",
+            border_style="green",
+            box=box.DOUBLE
+        ))
+        self.console.print(f"[bold green]{'─'*80}[/bold green]\n")
 
-        # File
-        self._write_to_file(f"\n[{timestamp}] AGENT RESPONSE:\n")
-        self._write_to_file(f"{response}\n")
-        self._write_to_file("-" * 80 + "\n")
+        # Aggiungi a html_console
+        self.html_console.print(f"\n[bold green]{'─'*80}[/bold green]")
+        self.html_console.print(Panel.fit(
+            "[bold green]📥 RESPONSE[/bold green]",
+            border_style="green"
+        ))
+        self.html_console.print(Panel(
+            response,
+            title=f"[green]Agent Response | {timestamp}[/green]",
+            border_style="green",
+            box=box.DOUBLE
+        ))
+        self.html_console.print(f"[bold green]{'─'*80}[/bold green]\n")
+
+        # File .log strutturato
+        log_content = []
+        log_content.append("\n" + "┌─ 📥 RESPONSE " + "─"*63 + "┐")
+        log_content.append("│" + f" Time: {timestamp}".ljust(76) + "│")
+        log_content.append("├" + "─"*78 + "┤")
+
+        # Wrappa la risposta
+        for line in response.split('\n')[:50]:  # Max 50 righe
+            if len(line) > 74:
+                # Spezza linee lunghe
+                while len(line) > 74:
+                    log_content.append("│ " + line[:74])
+                    line = line[74:]
+                if line:
+                    log_content.append("│ " + line.ljust(76) + "│")
+            else:
+                log_content.append("│ " + line.ljust(76) + "│")
+
+        log_content.append("└" + "─"*78 + "┘\n")
+        self._write_to_file("\n".join(log_content))
 
     def log_error(self, error: str, context: Optional[str] = None):
         """
@@ -250,7 +380,7 @@ class AgentLogger:
         self._write_to_file("-" * 80 + "\n")
 
     def log_summary(self):
-        """Mostra un riassunto della sessione."""
+        """Mostra un riassunto della sessione e salva HTML."""
         timestamp = datetime.now().strftime("%H:%M:%S")
 
         # Crea tabella riassuntiva
@@ -264,14 +394,71 @@ class AgentLogger:
 
         self.console.print()
         self.console.print(table)
-        self.console.print(f"\n[dim]Log file: {self.log_file}[/dim]\n")
+        self.console.print(f"\n[dim]Log file: {self.log_file}[/dim]")
+        self.console.print(f"[dim]HTML file: {self.html_file}[/dim]\n")
 
-        # File
-        self._write_to_file(f"\n[{timestamp}] SESSION SUMMARY:\n")
-        self._write_to_file(f"LLM Calls: {self.llm_calls}\n")
-        self._write_to_file(f"Tool Calls: {self.tool_calls}\n")
-        self._write_to_file(f"MCP Requests: {self.mcp_requests}\n")
-        self._write_to_file("=" * 80 + "\n")
+        # Aggiungi a html_console
+        self.html_console.print()
+        self.html_console.print(table)
+
+        # File .log
+        log_content = []
+        log_content.append("\n" + "╔" + "═"*78 + "╗")
+        log_content.append("║" + " SESSION SUMMARY".center(78) + "║")
+        log_content.append("╠" + "═"*78 + "╣")
+        log_content.append("║" + f" LLM Calls: {self.llm_calls}".ljust(78) + "║")
+        log_content.append("║" + f" Tool Calls: {self.tool_calls}".ljust(78) + "║")
+        log_content.append("║" + f" MCP Requests: {self.mcp_requests}".ljust(78) + "║")
+        log_content.append("║" + f" Time: {timestamp}".ljust(78) + "║")
+        log_content.append("╚" + "═"*78 + "╝\n")
+        self._write_to_file("\n".join(log_content))
+
+        # Salva HTML con colori Rich
+        self._save_html()
+
+    def _save_html(self):
+        """Salva il log in formato HTML con i colori Rich."""
+        try:
+            from rich.terminal_theme import MONOKAI
+
+            html_output = self.html_console.export_html(
+                theme=MONOKAI,
+                inline_styles=True,
+                clear=False
+            )
+
+            # Aggiungi un titolo custom
+            html_with_title = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Agent Log - {self.run_id}</title>
+    <style>
+        body {{
+            background-color: #1e1e1e;
+            margin: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }}
+        h1 {{
+            color: #00d9ff;
+            text-align: center;
+            padding: 20px;
+            border-bottom: 2px solid #00d9ff;
+        }}
+    </style>
+</head>
+<body>
+    <h1>🤖 Human Digital Twin - Agent Log</h1>
+    <p style="text-align: center; color: #888;">Run ID: {self.run_id} | {datetime.now().isoformat()}</p>
+    {html_output}
+</body>
+</html>"""
+
+            with open(self.html_file, 'w', encoding='utf-8') as f:
+                f.write(html_with_title)
+
+        except Exception as e:
+            self.console.print(f"[yellow]Warning: Could not save HTML log: {str(e)}[/yellow]")
 
 
 # Istanza globale del logger

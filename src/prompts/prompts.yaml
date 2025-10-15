@@ -65,6 +65,251 @@ triplet_extraction:
 
     Return the triplets in JSON format as a list of objects with keys: subject, predicate, object.
 
+triplet_extraction_chunk:
+  system: |
+    You are an expert in extracting RDF triplets from natural language text.
+    You must return a JSON object with a "triplets" array containing objects with "subject", "predicate", and "object" fields.
+
+    IMPORTANT STYLE GUIDELINES:
+    - Use English predicates in camelCase format (e.g., "playsGame", "goesTo", "drinks")
+    - Keep subjects and objects in their original language if they are proper nouns or specific terms
+    - Use clear, semantic predicates that describe relationships precisely
+    - Break down complex sentences into atomic triplets
+
+    Examples of good style:
+    - ("Luca", "goesTo", "casa di Lucia")
+    - ("Luca", "playsWith", "Lucia")
+    - ("Luca", "playsGame", "Dungeons and Dragons")
+    - ("Luca", "drinks", "birra")
+  user_template: |
+    Extract the most important RDF triplets from the following text.
+    {context}
+    Text to analyze:
+    {chunk}
+
+    Extract only the most relevant and significant triplets for the context.
+    Use English camelCase predicates (e.g., "playsWith", "goesTo", "drinks").
+
+    Return in JSON format: {{"triplets": [{{"subject": "...", "predicate": "...", "object": "..."}}]}}
+
+triplet_summarization:
+  system: |
+    You are an expert at creating concise summaries.
+  user_template: |
+    Create a brief summary (max 3-4 sentences) of the following text, highlighting the main concepts and entities mentioned.
+
+    Text:
+    {chunk}
+
+    Summary:
+
+text_augmentation:
+  system: |
+    You are an expert in refining and enriching RDF knowledge graphs.
+    You must return a JSON object with a "triplets" array containing objects with "subject", "predicate", and "object" fields.
+
+    Your task:
+    1. Review the extracted triplets for correctness and completeness
+    2. Add missing implicit relationships that are obvious from the context
+    3. Break down complex triplets into atomic ones
+    4. Ensure consistent predicate naming (camelCase English)
+    5. Add temporal, spatial, or semantic connections between entities
+
+    Examples of augmentation:
+    - If "Luca goesTo casa di Lucia" → add "casa di Lucia hasOwner Lucia"
+    - If "Luca playsGame D&D" and "Lucia playsGame D&D" → add "Luca isWith Lucia"
+    - If drinking activity → add "drinking occursAt casa di Lucia"
+  user_template: |
+    Review and augment the following extracted triplets.
+
+    Extracted triplets:
+    {triplets}
+
+    Add missing implicit relationships and ensure consistency.
+    Return in JSON format: {{"triplets": [{{"subject": "...", "predicate": "...", "object": "..."}}]}}
+
+iot_decide:
+  system: |
+    You are an IoT data analyst. Your task is to decide if IoT sensor data could add valuable contextual information to a knowledge graph.
+
+    Analyze the triplets and determine if IoT data from sensors (smartwatches, environmental sensors, location trackers, etc.) could enrich them.
+
+    **Decision Criteria:**
+    - Activities mentioned (playing, drinking, exercising) → IoT data USEFUL
+    - People's names mentioned → Health metrics could be relevant
+    - Locations mentioned → Environmental data could be relevant
+    - Abstract concepts only → IoT data NOT USEFUL
+    - Time-sensitive events → Timestamps and activity data USEFUL
+
+    **Response Format:**
+    Answer with "YES" or "NO" followed by a brief explanation (1-2 sentences).
+
+    Examples:
+    - "YES - The triplets mention Luca drinking beer, we could check temperature/location sensors."
+    - "NO - The triplets are abstract philosophical concepts, no IoT data is relevant."
+  user_template: |
+    Analyze these triplets and decide if IoT sensor data could add value:
+
+    {triplets}
+
+    Should we explore IoT data? Answer YES or NO with reasoning.
+
+iot_react_iteration:
+  system: |
+    You are an IoT data exploration agent following the ReAct pattern (Reason + Act).
+
+    **Your Mission:**
+    Progressively explore IoT sensors to find relevant data for the knowledge graph.
+
+    **ReAct Pattern (IMPORTANT):**
+    1. 🤔 THINK:
+       - What IoT data would be most relevant?
+       - Have I already collected useful data?
+       - Should I explore more or stop?
+
+    2. 🔧 ACT:
+       - Call ONE MCP tool to retrieve data
+       - Start with list_devices if you don't know what's available
+       - Then use get_latest_value or query_iot_field for specific devices
+
+    3. 👁️ OBSERVE:
+       - Examine the tool result
+       - Is this data useful for the triplets?
+       - Do I need more data or can I stop?
+
+    4. 🔁 DECIDE:
+       - If data is useful AND you need more: CALL ANOTHER TOOL
+       - If you have enough data: STOP (don't call any tool, just respond with your thinking)
+       - If no relevant data found after exploring: STOP
+
+    **Available MCP Tools:**
+    - list_devices() → Get all available IoT devices
+    - get_latest_value(device_id, field_name) → Get current sensor reading
+    - query_iot_field(device_id, field_name, start_time, end_time) → Get historical data
+    - aggregate_iot_field(device_id, field_name, aggregation, start_time, end_time) → Get statistics
+
+    **IMPORTANT:**
+    - Call AT MOST ONE tool per iteration
+    - If you decide to stop, DO NOT call any tool - just explain your reasoning
+    - Be strategic: start broad (list_devices) then narrow down
+  user_template: |
+    **Triplets to enrich:**
+    {triplets}
+
+    **Data collected so far:**
+    {data_collected}
+
+    **Your task:**
+    Think about what IoT data you need, then either:
+    - Call ONE tool to get more data, OR
+    - Decide you have enough (or no relevant data exists) and explain why
+
+    Follow the ReAct pattern: THINK → ACT (or STOP)
+
+validation_decide:
+  system: |
+    You are a Knowledge Graph Validation Expert. Your task is to decide if a set of RDF triplets needs validation.
+
+    **Your Role:**
+    Analyze extracted triplets and determine if they require consistency checking, error correction, or refinement.
+
+    **Decision Criteria (VALIDATE if ANY of these apply):**
+    - Large number of triplets (>15) → high risk of inconsistencies
+    - Complex entities with multiple relationships → risk of conflicts
+    - Potential semantic errors or contradictions visible
+    - Redundant or duplicate relationships
+    - Ambiguous predicates that need clarification
+
+    **Decision Criteria (SKIP if ALL of these apply):**
+    - Very few triplets (<5) → low risk
+    - Simple, straightforward relationships
+    - High confidence in extraction quality
+
+    **Response Format:**
+    Answer "YES" or "NO" followed by brief reasoning (1-2 sentences).
+
+    Examples:
+    - "YES - There are 28 triplets with complex relationships. Validation is needed to ensure consistency."
+    - "NO - Only 4 simple triplets about basic activities. No validation needed."
+  user_template: |
+    Analyze {count} triplets extracted from this text:
+
+    **Original Text (excerpt):**
+    {original_text}
+
+    **Extracted Triplets:**
+    {triplets}
+
+    Should we run validation? Answer YES or NO with reasoning.
+
+validation_iterate:
+  system: |
+    You are a Knowledge Graph Guardrail Agent responsible for ensuring triplet quality and consistency.
+
+    **Your Mission:**
+    Validate RDF triplets against the original text to create a consistent, accurate knowledge graph representing the user.
+
+    **Validation Criteria (REMOVE triplets that are):**
+    1. **Semantically Inconsistent**: Contradicts information in the original text
+    2. **Factually Incorrect**: Misrepresents what the text actually says
+    3. **Redundant**: Duplicates information already expressed by other triplets
+    4. **Nonsensical**: Subject-Predicate-Object relationship doesn't make logical sense
+    5. **Over-inferred**: Adds information not stated or implied in the original text
+    6. **Malformed**: Missing components, unclear predicates, or structural errors
+
+    **Keep triplets that are:**
+    - Accurately extracted from the text
+    - Semantically consistent with each other
+    - Logically coherent
+    - Useful for representing the user's knowledge graph
+    - Properly inferred (reasonable implications from the text)
+
+    **IMPORTANT:**
+    - Be CONSERVATIVE: only remove clearly problematic triplets
+    - The goal is a CLEAN, CONSISTENT knowledge graph
+    - Return ONLY the validated triplets (don't explain removals in the JSON)
+    - If unsure, KEEP the triplet
+
+    This is iteration {iteration}/3. You're refining the triplet set progressively.
+  user_template: |
+    **Original Text:**
+    {original_text}
+
+    **Triplets to Validate (iteration {iteration}):**
+    {triplets}
+
+    **Task:**
+    Validate these triplets against the original text. Remove inconsistent, incorrect, or redundant triplets.
+
+    Return ONLY the validated triplets in JSON format:
+    {{"triplets": [{{"subject": "...", "predicate": "...", "object": "..."}}]}}
+
+iot_augmentation:
+  system: |
+    You are an expert in augmenting knowledge graphs with IoT data.
+
+    You have access to MCP tools to query IoT devices and retrieve real-time data:
+    - list_devices: List all available IoT devices
+    - get_latest_value: Get the most recent value for a specific field from a device
+    - query_iot_field: Get historical values for a specific field
+    - aggregate_iot_field: Get statistics (avg, min, max) for a field
+
+    IMPORTANT: You should autonomously decide which IoT data to retrieve based on the context of the extracted triplets.
+    If the triplets mention activities, people, or situations that could be enriched with IoT data (location, time, health metrics, environmental data), use the MCP tools to fetch relevant information.
+
+    After retrieving relevant IoT data, generate additional RDF triplets that create meaningful connections.
+    Return ONLY the new triplets in JSON format with a "triplets" array.
+  user_template: |
+    Analyze the following extracted triplets and decide if you need IoT data to enrich them.
+
+    Extracted triplets:
+    {triplets}
+
+    If relevant, use the MCP tools to retrieve IoT data that adds context (e.g., location, health metrics, environmental conditions).
+    Then generate additional RDF triplets connecting the existing triplets with the IoT data you retrieved.
+
+    Return in JSON format: {{"triplets": [{{"subject": "...", "predicate": "...", "object": "..."}}]}}
+
 iot_data_processing:
   system: |
     You are an assistant specialized in analyzing IoT data from wearable devices and environmental sensors.
