@@ -6,6 +6,8 @@
 venv/
 ENV/
 
+*cache/
+
 # Python cache
 __pycache__/
 *.py[cod]
@@ -46,3 +48,7 @@ Thumbs.db
 
 # Private files
 donotshare/
+*sessions/
+logs/
+Ontology/
+.env

@@ -12,6 +12,7 @@ pydantic==2.10.5
 
 # Frontend
 streamlit==1.41.1
+plotly==5.24.1
 
 # Configuration & Environment
 python-dotenv==1.0.1
@@ -28,3 +29,8 @@ rdflib==7.1.1
 
 # Logging & Console
 rich==13.9.4
+
+# Embeddings & NLP
+cohere==5.12.0
+mistralai==1.2.6
+numpy==1.26.4

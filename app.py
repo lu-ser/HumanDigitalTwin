@@ -98,8 +98,9 @@ def main():
         st.write(f"**MCP Server:** {mcp_url}")
 
     # Tabs per le diverse funzionalità
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "Estrazione Triplette",
+        "Ontology Validation",
         "Dati IoT",
         "Servizi Esterni",
         "Chat Agent"
@@ -177,8 +178,31 @@ def main():
                             final = result.get("final_triplets", [])
                             st.subheader(f"Totale triplette finali: {len(final)}")
 
+                            # Salva in session_state per riuso nella tab Ontology
+                            st.session_state['extracted_triplets'] = final
+                            st.session_state['extraction_result'] = result
+
+                            # Auto-save session se configurato
+                            sessions_config = config.get('sessions', {})
+                            if sessions_config.get('auto_save', True):
+                                from src.utils import SessionManager
+
+                                session_mgr = SessionManager(sessions_config.get('sessions_dir', 'data/sessions'))
+
+                                # Prepara metadata
+                                metadata = {
+                                    'input_text_preview': text_input[:200] + "..." if len(text_input) > 200 else text_input,
+                                    'chunk_size': chunk_size,
+                                    'total_chunks': len(result.get('chunks', [])),
+                                    'extracted_count': len(result.get('triplets', [])),
+                                    'augmented_count': len(result.get('augmented_triplets', []))
+                                }
+
+                                saved_path = session_mgr.save_session(final, metadata)
+                                st.session_state['last_saved_session'] = saved_path
+                                st.success(f"💾 Sessione salvata automaticamente: `{Path(saved_path).name}`")
+
                             # Download JSON
-                            import json
                             json_output = json.dumps(final, indent=2)
                             st.download_button(
                                 label="Download triplette (JSON)",
@@ -187,6 +211,9 @@ def main():
                                 mime="application/json"
                             )
 
+                            # Pulsante per andare alla validazione
+                            st.info("💡 Triplette salvate! Vai alla tab **Ontology Validation** per validarle con Schema.org")
+
                     except Exception as e:
                         st.error(f"Errore durante l'estrazione: {str(e)}")
                         import traceback
@@ -194,8 +221,436 @@ def main():
             else:
                 st.warning("Inserisci del testo o carica un file JSON prima di procedere")
 
-    # Tab 2: Dati IoT
+    # Tab 2: Ontology Validation
     with tab2:
+        st.header("🔍 Ontology Validation con Schema.org")
+        st.write("Valida le triplette estratte confrontandole semanticamente con l'ontologia Schema.org")
+
+        # UI per caricamento sessioni
+        st.subheader("📂 Carica Sessione")
+
+        col1, col2 = st.columns([3, 1])
+
+        with col1:
+            load_mode = st.radio(
+                "Sorgente triplette:",
+                ["Sessione corrente (in memoria)", "Carica da sessione salvata", "Carica file JSON custom"],
+                horizontal=False
+            )
+
+        # Gestisci caricamento da sessione salvata
+        if load_mode == "Carica da sessione salvata":
+            from src.utils import SessionManager
+
+            sessions_config = config.get('sessions', {})
+            session_mgr = SessionManager(sessions_config.get('sessions_dir', 'data/sessions'))
+
+            # Lista sessioni disponibili
+            sessions = session_mgr.list_sessions()
+
+            if not sessions:
+                st.warning("⚠️ Nessuna sessione salvata trovata. Estrai triplette prima nella tab **Estrazione Triplette**.")
+            else:
+                st.info(f"📦 Trovate {len(sessions)} sessioni salvate")
+
+                # Selectbox per scegliere la sessione
+                session_options = [
+                    f"{s['filename']} - {s['triplets_count']} triplette ({s['timestamp'][:19]})"
+                    for s in sessions
+                ]
+
+                selected_idx = st.selectbox(
+                    "Seleziona sessione da caricare:",
+                    range(len(sessions)),
+                    format_func=lambda i: session_options[i]
+                )
+
+                selected_session = sessions[selected_idx]
+
+                # Mostra preview metadata
+                with st.expander("🔍 Info Sessione"):
+                    st.write(f"**File:** {selected_session['filename']}")
+                    st.write(f"**Timestamp:** {selected_session['timestamp']}")
+                    st.write(f"**Triplette:** {selected_session['triplets_count']}")
+
+                    metadata = selected_session.get('metadata', {})
+                    if metadata:
+                        st.write("**Metadata:**")
+                        st.json(metadata)
+
+                # Pulsante caricamento
+                if st.button("📥 Carica Sessione", type="primary"):
+                    session_data = session_mgr.load_session(selected_session['filepath'])
+                    st.session_state['extracted_triplets'] = session_data['triplets']
+                    st.session_state['loaded_from_file'] = selected_session['filename']
+                    st.success(f"✅ Sessione caricata: {selected_session['filename']}")
+                    st.rerun()
+
+        # Gestisci caricamento da file JSON custom
+        elif load_mode == "Carica file JSON custom":
+            uploaded_file = st.file_uploader("Carica file JSON con triplette", type=['json'])
+
+            if uploaded_file:
+                try:
+                    loaded_data = json.load(uploaded_file)
+
+                    # Supporta diversi formati
+                    if 'triplets' in loaded_data:
+                        triplets = loaded_data['triplets']
+                    elif isinstance(loaded_data, list):
+                        triplets = loaded_data
+                    else:
+                        st.error("❌ Formato JSON non riconosciuto. Atteso: lista di triplette o oggetto con campo 'triplets'")
+                        triplets = []
+
+                    if triplets:
+                        st.success(f"✅ Caricato file con {len(triplets)} triplette")
+
+                        # Mostra preview
+                        with st.expander("🔍 Preview Triplette"):
+                            st.json(triplets[:3])
+
+                        # Pulsante per usare queste triplette
+                        if st.button("📥 Usa Queste Triplette", type="primary"):
+                            st.session_state['extracted_triplets'] = triplets
+                            st.session_state['loaded_from_file'] = uploaded_file.name
+                            st.success(f"✅ Triplette caricate da: {uploaded_file.name}")
+                            st.rerun()
+
+                except json.JSONDecodeError as e:
+                    st.error(f"❌ Errore nel parsing JSON: {str(e)}")
+                except Exception as e:
+                    st.error(f"❌ Errore: {str(e)}")
+
+        # Controlla se ci sono triplette da validare
+        if 'extracted_triplets' not in st.session_state or not st.session_state['extracted_triplets']:
+            if load_mode == "Sessione corrente (in memoria)":
+                st.warning("⚠️ Nessuna tripletta in memoria. Vai alla tab **Estrazione Triplette** o carica una sessione salvata.")
+        else:
+            triplets_to_validate = st.session_state['extracted_triplets']
+
+            # Mostra info fonte
+            source_info = ""
+            if 'loaded_from_file' in st.session_state:
+                source_info = f" (caricato da: `{st.session_state['loaded_from_file']}`)"
+
+            st.success(f"✅ Trovate **{len(triplets_to_validate)}** triplette da validare{source_info}")
+
+            # Sidebar per configurazione
+            with st.sidebar:
+                st.markdown("---")
+                st.markdown("### 🛠️ Validazione Config")
+
+                # Soglia di confidence
+                ontology_config = config.get_ontology_config()
+                validation_threshold = st.slider(
+                    "Soglia confidence minima:",
+                    min_value=0.0,
+                    max_value=1.0,
+                    value=ontology_config.get('validation_threshold', 0.5),
+                    step=0.05,
+                    help="Triplette con score sotto questa soglia saranno marcate come low-confidence"
+                )
+
+                # Rate limit
+                rate_limit = st.slider(
+                    "Rate limit (sec):",
+                    min_value=0.0,
+                    max_value=5.0,
+                    value=ontology_config.get('rate_limit_delay', 0.5),
+                    step=0.1,
+                    help="Pausa tra richieste API per embeddings (0.5+ raccomandato per account free)"
+                )
+
+            # Inizializza servizi ontology (cached)
+            @st.cache_resource
+            def init_ontology_services(_config):
+                """Inizializza i servizi per validazione ontology."""
+                from src.ontology.schema_downloader import ensure_schema_org
+                from src.ontology import SchemaOrgLoader, EmbeddingService
+
+                # Download schema.jsonld se necessario
+                with st.spinner("📥 Verifico disponibilità Schema.org ontology..."):
+                    schema_path = ensure_schema_org(_config)
+                    if not schema_path:
+                        st.error("❌ Impossibile scaricare Schema.org ontology")
+                        return None, None
+
+                # Carica ontologia
+                with st.spinner("📚 Caricamento Schema.org ontology..."):
+                    ontology = SchemaOrgLoader(schema_path)
+                    st.success(f"✅ Ontologia caricata: {len(ontology.get_all_classes())} classi, {len(ontology.get_all_properties())} proprietà")
+
+                # Inizializza embedding service
+                ontology_config = _config.get_ontology_config()
+                provider = ontology_config.get('embedding_provider', 'cohere')
+                cache_dir = ontology_config.get('cache_dir', 'data/ontology/cache')
+
+                api_key = None
+                if provider == 'cohere':
+                    api_key = _config.get_env('COHERE_API_KEY')
+                elif provider == 'mistral':
+                    api_key = _config.get_env('MISTRAL_API_KEY')
+
+                if not api_key and provider in ['cohere', 'mistral']:
+                    st.error(f"❌ {provider.upper()}_API_KEY non trovata nel file .env")
+                    return None, None
+
+                embeddings = EmbeddingService(
+                    provider=provider,
+                    api_key=api_key,
+                    use_cache=True,
+                    cache_dir=cache_dir
+                )
+
+                return ontology, embeddings
+
+            ontology, embeddings = init_ontology_services(config)
+
+            if ontology and embeddings:
+                # Pulsante per pre-calcolare embeddings
+                cache_size = len(embeddings.cache.cache) if embeddings.cache else 0
+                total_items = len(ontology.get_all_classes()) + len(ontology.get_all_properties())
+
+                col1, col2, col3 = st.columns([2, 1, 1])
+                with col1:
+                    st.metric("Embeddings in cache", f"{cache_size}/{total_items}")
+                with col2:
+                    completion_pct = (cache_size / total_items * 100) if total_items > 0 else 0
+                    st.metric("Completamento", f"{completion_pct:.1f}%")
+
+                # Pre-compute embeddings se necessario
+                if cache_size < total_items:
+                    if st.button("🚀 Pre-calcola tutti gli embeddings", help="Calcola gli embeddings per tutte le classi/proprietà (necessario solo la prima volta)"):
+                        with st.spinner("⏳ Pre-calcolo embeddings in corso..."):
+                            progress_bar = st.progress(0.0)
+                            status_text = st.empty()
+
+                            # Raccogli tutti i testi da embeddare
+                            # IMPORTANTE: Usa la STESSA logica di TripleMatcher per evitare cache miss!
+                            all_texts = []
+
+                            # Classes con enriched context (come TripleMatcher._get_class_embedding)
+                            for class_name in ontology.get_all_classes():
+                                class_desc = ontology.get_class_description(class_name)
+                                class_info = ontology.get_class_info(class_name)
+
+                                parts = [f"{class_name}"]
+                                if class_desc:
+                                    parts.append(class_desc)
+
+                                # Add parent classes for context
+                                parent_classes = class_info.get('subClassOf', [])
+                                if parent_classes:
+                                    parents_str = ", ".join(parent_classes[:3])
+                                    parts.append(f"Type of: {parents_str}")
+
+                                text = ". ".join(parts)
+                                all_texts.append(text)
+
+                            # Properties con enriched context (come TripleMatcher._get_property_embedding)
+                            for prop_name in ontology.get_all_properties():
+                                prop_desc = ontology.get_property_description(prop_name)
+                                prop_info = ontology.get_property_info(prop_name)
+
+                                parts = [f"{prop_name}"]
+                                if prop_desc:
+                                    parts.append(prop_desc)
+
+                                # Add domain context
+                                domain_classes = prop_info.get('domainIncludes', [])
+                                if domain_classes:
+                                    domain_str = ", ".join(domain_classes[:3])
+                                    parts.append(f"Used with: {domain_str}")
+
+                                # Add range context
+                                range_classes = prop_info.get('rangeIncludes', [])
+                                if range_classes:
+                                    range_str = ", ".join(range_classes[:3])
+                                    parts.append(f"Points to: {range_str}")
+
+                                text = ". ".join(parts)
+                                all_texts.append(text)
+
+                            # Processa a batch
+                            batch_size = 20
+                            for i in range(0, len(all_texts), batch_size):
+                                batch = all_texts[i:i + batch_size]
+
+                                try:
+                                    embeddings.embed_texts(batch, input_type="search_document", rate_limit_delay=rate_limit)
+                                    embeddings.cache.save_cache()
+
+                                    progress = min(1.0, (i + batch_size) / len(all_texts))
+                                    progress_bar.progress(progress)
+                                    status_text.text(f"Processati {min(i + batch_size, len(all_texts))}/{len(all_texts)} embeddings...")
+
+                                except Exception as e:
+                                    st.error(f"❌ Errore durante pre-calcolo: {str(e)}")
+                                    break
+
+                            st.success("✅ Pre-calcolo completato!")
+                            st.rerun()
+
+                # Pulsante per validare triplette
+                st.markdown("---")
+                if st.button("🔍 Valida Triplette con Schema.org", type="primary"):
+                    from src.ontology import TripleMatcher
+
+                    matcher = TripleMatcher(ontology, embeddings, rate_limit_delay=rate_limit)
+
+                    validated_results = []
+
+                    progress_bar = st.progress(0.0)
+                    status_text = st.empty()
+
+                    for idx, triplet in enumerate(triplets_to_validate):
+                        status_text.text(f"Validazione tripletta {idx + 1}/{len(triplets_to_validate)}...")
+
+                        subject = triplet.get('subject', '')
+                        predicate = triplet.get('predicate', '')
+                        obj = triplet.get('object', '')
+
+                        if subject and predicate and obj:
+                            result = matcher.match_triple(subject, predicate, obj)
+                            validated_results.append(result)
+
+                        progress_bar.progress((idx + 1) / len(triplets_to_validate))
+
+                    status_text.empty()
+                    progress_bar.empty()
+
+                    # Salva risultati in session_state
+                    st.session_state['validation_results'] = validated_results
+                    st.session_state['validation_threshold'] = validation_threshold
+
+                    st.success(f"✅ Validazione completata per {len(validated_results)} triplette!")
+                    st.rerun()
+
+                # Mostra risultati validazione se disponibili
+                if 'validation_results' in st.session_state and st.session_state['validation_results']:
+                    st.markdown("---")
+                    st.subheader("📊 Risultati Validazione")
+
+                    results = st.session_state['validation_results']
+                    threshold = st.session_state.get('validation_threshold', 0.5)
+
+                    # Filtra per soglia
+                    valid_results = [r for r in results if r.get('mu', 0.0) >= threshold]
+                    low_conf_results = [r for r in results if r.get('mu', 0.0) < threshold]
+
+                    # Statistiche
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("✅ Valid", len(valid_results))
+                    with col2:
+                        st.metric("⚠️ Low Confidence", len(low_conf_results))
+                    with col3:
+                        avg_score = sum(r.get('mu', 0.0) for r in results) / len(results) if results else 0
+                        st.metric("📈 Score Medio", f"{avg_score:.3f}")
+
+                    # Distribuzione score (istogramma)
+                    import plotly.express as px
+                    scores = [r.get('mu', 0.0) for r in results]
+                    fig = px.histogram(
+                        x=scores,
+                        nbins=20,
+                        title="Distribuzione Score di Confidenza",
+                        labels={'x': 'Score μ', 'y': 'Frequenza'}
+                    )
+                    fig.add_vline(x=threshold, line_dash="dash", line_color="red", annotation_text="Soglia")
+                    st.plotly_chart(fig, use_container_width=True)
+
+                    # Tab per risultati validi e low-confidence
+                    result_tab1, result_tab2 = st.tabs(["✅ Validated Triplets", "⚠️ Low Confidence Triplets"])
+
+                    with result_tab1:
+                        if valid_results:
+                            for idx, result in enumerate(valid_results, 1):
+                                with st.expander(f"Tripletta #{idx} - Score: {result.get('mu', 0.0):.3f}"):
+                                    # Tripletta originale
+                                    st.markdown(f"**Tripletta:** `{result['subject']['value']}` → `{result['predicate']['value']}` → `{result['object']['value']}`")
+
+                                    # Matching info
+                                    col_s, col_p, col_o = st.columns(3)
+
+                                    with col_s:
+                                        st.markdown("**🎯 Subject**")
+                                        st.markdown(f"Class: `{result['subject']['matched_class']}`")
+                                        st.markdown(f"Score: `{result['subject']['confidence']:.3f}`")
+
+                                    with col_p:
+                                        st.markdown("**🔗 Predicate**")
+                                        st.markdown(f"Property: `{result['predicate']['matched_property']}`")
+                                        st.markdown(f"Score: `{result['predicate']['confidence']:.3f}`")
+
+                                    with col_o:
+                                        st.markdown("**📍 Object**")
+                                        st.markdown(f"Class: `{result['object']['matched_class']}`")
+                                        st.markdown(f"Score: `{result['object']['confidence']:.3f}`")
+
+                                    # Branch path
+                                    st.markdown(f"**🌳 Path:** {result.get('branch_path', 'N/A')}")
+
+                                    # Top candidates (collapsible)
+                                    with st.expander("🔍 Top Candidates"):
+                                        st.markdown("**Subject candidates:**")
+                                        for name, score in result['subject']['top_candidates'][:3]:
+                                            st.markdown(f"- {name}: {score:.3f}")
+
+                                        st.markdown("**Predicate candidates:**")
+                                        for name, score in result['predicate']['top_candidates'][:3]:
+                                            st.markdown(f"- {name}: {score:.3f}")
+
+                                        st.markdown("**Object candidates:**")
+                                        for name, score in result['object']['top_candidates'][:3]:
+                                            st.markdown(f"- {name}: {score:.3f}")
+                        else:
+                            st.info("Nessuna tripletta sopra la soglia")
+
+                    with result_tab2:
+                        if low_conf_results:
+                            st.warning(f"⚠️ {len(low_conf_results)} triplette sotto la soglia {threshold}")
+
+                            for idx, result in enumerate(low_conf_results, 1):
+                                with st.expander(f"Tripletta #{idx} - Score: {result.get('mu', 0.0):.3f}"):
+                                    # Tripletta originale
+                                    st.markdown(f"**Tripletta:** `{result['subject']['value']}` → `{result['predicate']['value']}` → `{result['object']['value']}`")
+
+                                    # Matching info
+                                    col_s, col_p, col_o = st.columns(3)
+
+                                    with col_s:
+                                        st.markdown("**🎯 Subject**")
+                                        st.markdown(f"Class: `{result['subject']['matched_class']}`")
+                                        st.markdown(f"Score: `{result['subject']['confidence']:.3f}`")
+
+                                    with col_p:
+                                        st.markdown("**🔗 Predicate**")
+                                        st.markdown(f"Property: `{result['predicate']['matched_property']}`")
+                                        st.markdown(f"Score: `{result['predicate']['confidence']:.3f}`")
+
+                                    with col_o:
+                                        st.markdown("**📍 Object**")
+                                        st.markdown(f"Class: `{result['object']['matched_class']}`")
+                                        st.markdown(f"Score: `{result['object']['confidence']:.3f}`")
+
+                                    # Branch path
+                                    st.markdown(f"**🌳 Path:** {result.get('branch_path', 'N/A')}")
+                        else:
+                            st.success("✅ Tutte le triplette sopra la soglia!")
+
+                    # Download risultati validati
+                    json_output = json.dumps(results, indent=2, ensure_ascii=False)
+                    st.download_button(
+                        label="⬇️ Download Risultati Validazione (JSON)",
+                        data=json_output,
+                        file_name="validation_results.json",
+                        mime="application/json"
+                    )
+
+    # Tab 3: Dati IoT
+    with tab3:
         st.header("Analisi Dati IoT")
         st.write("Genera o inserisci dati IoT conformi all'ontologia")
 
@@ -370,8 +825,8 @@ def main():
                 else:
                     st.warning("Compila tutti i campi")
 
-    # Tab 3: Servizi Esterni
-    with tab3:
+    # Tab 4: Servizi Esterni
+    with tab4:
         st.header("Servizi Esterni")
         st.write("Integrazione con Gmail e altri servizi")
 
@@ -423,8 +878,8 @@ def main():
             else:
                 st.warning("Inserisci i dati da inviare")
 
-    # Tab 4: Chat Agent con MCP
-    with tab4:
+    # Tab 5: Chat Agent con MCP
+    with tab5:
         st.header("Chat Agent con Accesso MCP")
         st.write("Chatta con l'AI che può accedere autonomamente ai dati IoT tramite il server MCP")
 

@@ -84,6 +84,10 @@ class ConfigManager:
         """Recupera la configurazione di Streamlit."""
         return self._config.get('streamlit', {})
 
+    def get_ontology_config(self) -> Dict[str, Any]:
+        """Recupera la configurazione dell'Ontology."""
+        return self._config.get('ontology', {})
+
     def reload(self) -> None:
         """Ricarica la configurazione dal file."""
         self._load_config()

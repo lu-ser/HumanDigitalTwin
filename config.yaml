@@ -10,3 +10,15 @@ mcp_server:
 
 streamlit:
   title: "Human Digital Twin"
+
+ontology:
+  schema_url: "https://schema.org/version/latest/schemaorg-current-https.jsonld"
+  schema_path: "data/ontology/schema.jsonld"
+  cache_dir: "data/ontology/cache"
+  embedding_provider: "cohere"  # cohere, mistral, gemma, qwen
+  validation_threshold: 0.5  # Minimum confidence score for valid triplets
+  rate_limit_delay: 0.5  # Delay between embedding API calls (seconds) - increased for free tier
+
+sessions:
+  sessions_dir: "data/sessions"  # Directory for saving triplet extraction sessions
+  auto_save: true  # Automatically save triplets after extraction
