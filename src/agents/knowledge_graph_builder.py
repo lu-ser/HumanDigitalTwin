@@ -199,10 +199,20 @@ class KnowledgeGraphBuilder:
 
         triplet = triplets[idx]
 
-        # Estrai valori dalla tripletta
-        subject = triplet.get("subject", {}).get("value", "")
-        predicate = triplet.get("predicate", {}).get("value", "")
-        obj = triplet.get("object", {}).get("value", "")
+        # Estrai valori dalla tripletta (gestisce sia formato {value: ..., type: ...} che formato semplice stringa)
+        def extract_value(field):
+            """Estrae il valore da un campo che può essere dict o stringa."""
+            value = triplet.get(field, "")
+            if isinstance(value, dict):
+                return value.get("value", "")
+            elif isinstance(value, str):
+                return value
+            else:
+                return str(value)
+
+        subject = extract_value("subject")
+        predicate = extract_value("predicate")
+        obj = extract_value("object")
 
         # Prompt per classificazione
         system_prompt = """You are a knowledge graph topic classifier.

@@ -898,9 +898,15 @@ def main():
                             for idx, triplet in enumerate(processed[:10], 1):
                                 broader = triplet.get("broader_topic", "N/A")
                                 narrower = triplet.get("narrower_topic", "N/A")
-                                subj = triplet.get("subject", {}).get("value", "")
-                                pred = triplet.get("predicate", {}).get("value", "")
-                                obj = triplet.get("object", {}).get("value", "")
+
+                                # Estrai valori (gestisce sia dict che stringa)
+                                def get_value(field):
+                                    val = triplet.get(field, "")
+                                    return val.get("value", "") if isinstance(val, dict) else str(val)
+
+                                subj = get_value("subject")
+                                pred = get_value("predicate")
+                                obj = get_value("object")
 
                                 with st.expander(f"Tripletta #{idx}: {broader} → {narrower}"):
                                     st.markdown(f"**Topics:** `{broader}` → `{narrower}`")
