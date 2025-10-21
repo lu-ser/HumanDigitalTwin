@@ -98,9 +98,10 @@ def main():
         st.write(f"**MCP Server:** {mcp_url}")
 
     # Tabs per le diverse funzionalità
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "Estrazione Triplette",
         "Ontology Validation",
+        "Knowledge Graph Builder",
         "Dati IoT",
         "Servizi Esterni",
         "Chat Agent"
@@ -750,8 +751,205 @@ def main():
                         mime="application/json"
                     )
 
-    # Tab 3: Dati IoT
+                    # Segnala che le triplette validate sono pronte per il KG
+                    st.info("💡 Triplette validate! Vai alla tab **Knowledge Graph Builder** per costruire il grafo")
+
+    # Tab 3: Knowledge Graph Builder
     with tab3:
+        st.header("🕸️ Knowledge Graph Builder")
+        st.write("Costruisci il Knowledge Graph classificando le triplette in broad/narrow topics")
+
+        # Inizializza il KG builder (cached)
+        @st.cache_resource
+        def init_kg_builder(_llm):
+            """Inizializza il Knowledge Graph Builder."""
+            from src.agents import KnowledgeGraphBuilder, InMemoryKnowledgeGraph
+            storage = InMemoryKnowledgeGraph()
+            return KnowledgeGraphBuilder(_llm, storage=storage)
+
+        kg_builder = init_kg_builder(llm)
+
+        # Mostra statistiche KG corrente
+        st.subheader("📊 Statistiche Knowledge Graph")
+        kg_stats = kg_builder.get_storage().get_stats()
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Broad Topics", kg_stats["num_broader_topics"])
+        with col2:
+            st.metric("Narrow Topics", kg_stats["num_narrower_topics"])
+        with col3:
+            st.metric("Triplette nel KG", kg_stats["num_triplets"])
+
+        # Visualizza struttura KG
+        if kg_stats["num_broader_topics"] > 0:
+            with st.expander("🌳 Visualizza Struttura Knowledge Graph"):
+                all_topics = kg_builder.get_storage().get_all_topics()
+                for broader, narrowers in all_topics.items():
+                    st.markdown(f"**{broader}**")
+                    for narrower in narrowers:
+                        st.markdown(f"  └─ {narrower}")
+
+        st.markdown("---")
+
+        # Carica triplette da processare
+        st.subheader("📥 Carica Triplette")
+
+        load_mode = st.radio(
+            "Sorgente triplette:",
+            ["Sessione corrente (dopo estrazione)", "Sessione corrente (dopo validazione)", "Carica file JSON custom"],
+            horizontal=False
+        )
+
+        triplets_to_process = None
+        source_info = ""
+
+        # Carica da sessione corrente (estrazione)
+        if load_mode == "Sessione corrente (dopo estrazione)":
+            if 'extracted_triplets' in st.session_state and st.session_state['extracted_triplets']:
+                triplets_to_process = st.session_state['extracted_triplets']
+                source_info = "triplette estratte (non validate)"
+            else:
+                st.warning("⚠️ Nessuna tripletta estratta in memoria. Vai alla tab **Estrazione Triplette**")
+
+        # Carica da sessione corrente (validazione)
+        elif load_mode == "Sessione corrente (dopo validazione)":
+            if 'validation_results' in st.session_state and st.session_state['validation_results']:
+                # Le validation_results contengono le triplette con metadata ontologico
+                triplets_to_process = st.session_state['validation_results']
+                source_info = "triplette validate con ontologia"
+            else:
+                st.warning("⚠️ Nessuna tripletta validata in memoria. Vai alla tab **Ontology Validation**")
+
+        # Carica da file JSON
+        elif load_mode == "Carica file JSON custom":
+            uploaded_file = st.file_uploader("Carica file JSON con triplette", type=['json'], key="kg_json_upload")
+
+            if uploaded_file:
+                try:
+                    loaded_data = json.load(uploaded_file)
+
+                    # Supporta diversi formati
+                    if 'triplets' in loaded_data:
+                        triplets_to_process = loaded_data['triplets']
+                    elif isinstance(loaded_data, list):
+                        triplets_to_process = loaded_data
+                    else:
+                        st.error("❌ Formato JSON non riconosciuto")
+
+                    if triplets_to_process:
+                        source_info = f"file {uploaded_file.name}"
+                        st.success(f"✅ Caricato file con {len(triplets_to_process)} triplette")
+
+                        with st.expander("🔍 Preview Triplette"):
+                            st.json(triplets_to_process[:3])
+
+                except json.JSONDecodeError as e:
+                    st.error(f"❌ Errore nel parsing JSON: {str(e)}")
+                except Exception as e:
+                    st.error(f"❌ Errore: {str(e)}")
+
+        # Configurazione
+        if triplets_to_process:
+            st.success(f"✅ Trovate **{len(triplets_to_process)}** triplette da processare ({source_info})")
+
+            with st.sidebar:
+                st.markdown("---")
+                st.markdown("### 🛠️ KG Builder Config")
+
+                ontology_check_enabled = st.checkbox(
+                    "Abilita check ontologico",
+                    value=True,
+                    help="Se disabilitato, le triplette vengono processate senza validazione ontologica"
+                )
+
+            # Pulsante per costruire il KG
+            if st.button("🚀 Costruisci Knowledge Graph", type="primary"):
+                with st.spinner("⏳ Processamento triplette in corso..."):
+                    progress_bar = st.progress(0.0)
+                    status_text = st.empty()
+
+                    try:
+                        # Esegui il builder
+                        result = kg_builder.run(
+                            triplets=triplets_to_process,
+                            ontology_check_enabled=ontology_check_enabled
+                        )
+
+                        progress_bar.progress(1.0)
+
+                        if result["success"]:
+                            st.success("✅ Knowledge Graph costruito con successo!")
+
+                            # Mostra statistiche aggiornate
+                            updated_stats = result["kg_stats"]
+                            col1, col2, col3 = st.columns(3)
+                            with col1:
+                                st.metric("Broad Topics", updated_stats["num_broader_topics"])
+                            with col2:
+                                st.metric("Narrow Topics", updated_stats["num_narrower_topics"])
+                            with col3:
+                                st.metric("Triplette Totali", updated_stats["num_triplets"])
+
+                            # Mostra triplette processate
+                            processed = result["processed_triplets"]
+                            st.subheader(f"📋 Triplette Processate: {len(processed)}")
+
+                            for idx, triplet in enumerate(processed[:10], 1):
+                                broader = triplet.get("broader_topic", "N/A")
+                                narrower = triplet.get("narrower_topic", "N/A")
+                                subj = triplet.get("subject", {}).get("value", "")
+                                pred = triplet.get("predicate", {}).get("value", "")
+                                obj = triplet.get("object", {}).get("value", "")
+
+                                with st.expander(f"Tripletta #{idx}: {broader} → {narrower}"):
+                                    st.markdown(f"**Topics:** `{broader}` → `{narrower}`")
+                                    st.markdown(f"**Tripletta:** {subj} → {pred} → {obj}")
+
+                                    # Metadata
+                                    metadata = triplet.get("topic_metadata", {})
+                                    if metadata:
+                                        action = metadata.get("action", "N/A")
+                                        st.markdown(f"**Action:** {action}")
+
+                                    # Reasoning
+                                    reasoning = triplet.get("classification_reasoning", "")
+                                    if reasoning:
+                                        st.markdown(f"**Reasoning:** {reasoning}")
+
+                            if len(processed) > 10:
+                                st.info(f"Mostrate prime 10 triplette. Totale: {len(processed)}")
+
+                            # Mostra errori se presenti
+                            errors = result.get("errors", [])
+                            if errors:
+                                with st.expander(f"⚠️ Errori ({len(errors)})"):
+                                    for error in errors:
+                                        st.warning(error)
+
+                            # Download risultati
+                            json_output = json.dumps(result, indent=2, ensure_ascii=False)
+                            st.download_button(
+                                label="⬇️ Download Risultati KG Builder (JSON)",
+                                data=json_output,
+                                file_name="kg_builder_results.json",
+                                mime="application/json"
+                            )
+
+                            # Salva in session state
+                            st.session_state['kg_builder_results'] = result
+
+                        else:
+                            st.error(f"❌ Errore durante la costruzione del KG: {result.get('error', 'Unknown error')}")
+
+                    except Exception as e:
+                        st.error(f"❌ Errore: {str(e)}")
+                        import traceback
+                        with st.expander("🐛 Stack Trace"):
+                            st.code(traceback.format_exc())
+
+    # Tab 4: Dati IoT
+    with tab4:
         st.header("Analisi Dati IoT")
         st.write("Genera o inserisci dati IoT conformi all'ontologia")
 
@@ -926,8 +1124,8 @@ def main():
                 else:
                     st.warning("Compila tutti i campi")
 
-    # Tab 4: Servizi Esterni
-    with tab4:
+    # Tab 5: Servizi Esterni
+    with tab5:
         st.header("Servizi Esterni")
         st.write("Integrazione con Gmail e altri servizi")
 
@@ -979,8 +1177,8 @@ def main():
             else:
                 st.warning("Inserisci i dati da inviare")
 
-    # Tab 5: Chat Agent con MCP
-    with tab5:
+    # Tab 6: Chat Agent con MCP
+    with tab6:
         st.header("Chat Agent con Accesso MCP")
         st.write("Chatta con l'AI che può accedere autonomamente ai dati IoT tramite il server MCP")
 
