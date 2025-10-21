@@ -34,3 +34,9 @@ rich==13.9.4
 cohere==5.12.0
 mistralai==1.2.6
 numpy==1.26.4
+
+# Graph Database
+neo4j==5.28.0
+langchain-neo4j==0.3.6
+networkx==3.5
+graphviz==0.21

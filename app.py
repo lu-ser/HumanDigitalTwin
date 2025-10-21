@@ -763,12 +763,43 @@ def main():
         @st.cache_resource
         def init_kg_builder(_config, _llm):
             """Inizializza il Knowledge Graph Builder."""
-            from src.agents import KnowledgeGraphBuilder, InMemoryKnowledgeGraph
+            from src.agents import KnowledgeGraphBuilder, InMemoryKnowledgeGraph, Neo4jKnowledgeGraph
             from src.prompts import PromptManager
 
             api_key = _config.get_env('GROQ_API_KEY')
-            storage = InMemoryKnowledgeGraph()
             prompt_mgr = PromptManager()
+
+            # Configurazione storage
+            kg_config = _config.get('knowledge_graph', {})
+            storage_type = kg_config.get('storage_type', 'in_memory')
+
+            if storage_type == 'neo4j':
+                # Usa Neo4j
+                neo4j_config = kg_config.get('neo4j', {})
+                neo4j_uri = _config.get_env('NEO4J_URI', neo4j_config.get('uri', 'bolt://localhost:7687'))
+                neo4j_username = _config.get_env('NEO4J_USERNAME', 'neo4j')
+                neo4j_password = _config.get_env('NEO4J_PASSWORD')
+                neo4j_database = _config.get_env('NEO4J_DATABASE', neo4j_config.get('database', 'neo4j'))
+
+                if not neo4j_password:
+                    st.warning("⚠️ NEO4J_PASSWORD non trovata in .env. Uso storage in-memory come fallback.")
+                    storage = InMemoryKnowledgeGraph()
+                else:
+                    try:
+                        storage = Neo4jKnowledgeGraph(
+                            uri=neo4j_uri,
+                            username=neo4j_username,
+                            password=neo4j_password,
+                            database=neo4j_database
+                        )
+                        st.success(f"✅ Connesso a Neo4j: {neo4j_uri} (database: {neo4j_database})")
+                    except Exception as e:
+                        st.error(f"❌ Errore connessione Neo4j: {str(e)}. Uso storage in-memory come fallback.")
+                        storage = InMemoryKnowledgeGraph()
+            else:
+                # Usa in-memory storage
+                storage = InMemoryKnowledgeGraph()
+                st.info("💾 Uso storage in-memory (temporaneo)")
 
             return KnowledgeGraphBuilder(
                 llm_api_key=api_key,

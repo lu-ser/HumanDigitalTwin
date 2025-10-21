@@ -51,7 +51,320 @@ class KGBuilderState(TypedDict):
     errors: List[str]  # Lista errori (gestita manualmente)
 
 
-# ==================== IN-MEMORY STORAGE (TODO: Replace with Neo4j) ====================
+# ==================== NEO4J STORAGE (with LangChain Integration) ====================
+
+class Neo4jKnowledgeGraph:
+    """
+    Storage Neo4j per il Knowledge Graph con integrazione LangChain.
+
+    Struttura del grafo:
+    - (:KnowledgeGraph) - Root node
+    - (:BroaderTopic {name: "Health"})
+    - (:NarrowerTopic {name: "Vital Signs"})
+    - (:Triplet {subject: "...", predicate: "...", object: "..."})
+
+    Relazioni:
+    - (KG)-[:HAS_CATEGORY]->(BroaderTopic)
+    - (BroaderTopic)-[:HAS_SUBCATEGORY]->(NarrowerTopic)
+    - (NarrowerTopic)-[:CONTAINS]->(Triplet)
+    """
+
+    def __init__(self, uri: str, username: str, password: str, database: str = "neo4j"):
+        """
+        Inizializza la connessione a Neo4j.
+
+        Args:
+            uri: URI del database Neo4j (es. "bolt://localhost:7687")
+            username: Username per autenticazione
+            password: Password per autenticazione
+            database: Nome del database (default: "neo4j")
+        """
+        from neo4j import GraphDatabase
+
+        self.driver = GraphDatabase.driver(uri, auth=(username, password))
+        self.database = database
+
+        # Crea root node e constraints se non esistono
+        self._setup_schema()
+
+    def _setup_schema(self):
+        """Crea constraints e root node del KG."""
+        with self.driver.session(database=self.database) as session:
+            # Constraints per unicità
+            session.run("CREATE CONSTRAINT broader_topic_name IF NOT EXISTS FOR (b:BroaderTopic) REQUIRE b.name IS UNIQUE")
+            session.run("CREATE CONSTRAINT narrower_topic_name IF NOT EXISTS FOR (n:NarrowerTopic) REQUIRE (n.name, n.broader_topic) IS UNIQUE")
+
+            # Crea root node se non esiste
+            session.run("""
+                MERGE (kg:KnowledgeGraph {id: 'main'})
+                ON CREATE SET kg.created_at = datetime()
+            """)
+
+    def close(self):
+        """Chiude la connessione al database."""
+        if self.driver:
+            self.driver.close()
+
+    def topic_exists(self, broader_topic: str, narrower_topic: str = None) -> bool:
+        """
+        Verifica se un topic esiste già nel grafo.
+
+        Args:
+            broader_topic: Broad topic da verificare
+            narrower_topic: Narrow topic da verificare (opzionale)
+
+        Returns:
+            True se il topic esiste, False altrimenti
+        """
+        with self.driver.session(database=self.database) as session:
+            if narrower_topic is None:
+                # Check solo broader
+                result = session.run("""
+                    MATCH (b:BroaderTopic {name: $broader})
+                    RETURN count(b) > 0 AS exists
+                """, broader=broader_topic)
+            else:
+                # Check entrambi
+                result = session.run("""
+                    MATCH (b:BroaderTopic {name: $broader})-[:HAS_SUBCATEGORY]->(n:NarrowerTopic {name: $narrower})
+                    RETURN count(n) > 0 AS exists
+                """, broader=broader_topic, narrower=narrower_topic)
+
+            record = result.single()
+            return record["exists"] if record else False
+
+    def add_triplet(self, triplet: Dict[str, Any], broader_topic: str, narrower_topic: str) -> None:
+        """
+        Aggiunge una tripletta al grafo con i suoi topic.
+
+        Args:
+            triplet: Tripletta da aggiungere
+            broader_topic: Broad topic
+            narrower_topic: Narrow topic
+        """
+        # Estrai valori dalla tripletta
+        def get_value(field):
+            val = triplet.get(field, "")
+            if isinstance(val, dict):
+                return val.get("value", str(val))
+            return str(val)
+
+        subject = get_value("subject")
+        predicate = get_value("predicate")
+        obj = get_value("object")
+
+        # Metadata aggiuntivi
+        metadata = {
+            "subject_type": triplet.get("subject", {}).get("type") if isinstance(triplet.get("subject"), dict) else None,
+            "predicate_type": triplet.get("predicate", {}).get("type") if isinstance(triplet.get("predicate"), dict) else None,
+            "object_type": triplet.get("object", {}).get("type") if isinstance(triplet.get("object"), dict) else None,
+            "reasoning": triplet.get("classification_reasoning"),
+            "created_at": "datetime()"
+        }
+
+        with self.driver.session(database=self.database) as session:
+            session.run("""
+                // Crea o trova BroaderTopic
+                MERGE (b:BroaderTopic {name: $broader})
+                ON CREATE SET b.created_at = datetime()
+
+                // Crea o trova NarrowerTopic
+                MERGE (n:NarrowerTopic {name: $narrower, broader_topic: $broader})
+                ON CREATE SET n.created_at = datetime()
+
+                // Link BroaderTopic -> NarrowerTopic
+                MERGE (b)-[:HAS_SUBCATEGORY]->(n)
+
+                // Link KG -> BroaderTopic
+                WITH b, n
+                MATCH (kg:KnowledgeGraph {id: 'main'})
+                MERGE (kg)-[:HAS_CATEGORY]->(b)
+
+                // Crea Triplet
+                WITH n
+                CREATE (t:Triplet {
+                    subject: $subject,
+                    predicate: $predicate,
+                    object: $object,
+                    subject_type: $subject_type,
+                    predicate_type: $predicate_type,
+                    object_type: $object_type,
+                    reasoning: $reasoning,
+                    created_at: datetime()
+                })
+
+                // Link NarrowerTopic -> Triplet
+                CREATE (n)-[:CONTAINS]->(t)
+            """,
+                broader=broader_topic,
+                narrower=narrower_topic,
+                subject=subject,
+                predicate=predicate,
+                object=obj,
+                **metadata
+            )
+
+        logger.info(f"Added triplet to Neo4j KG: {broader_topic} → {narrower_topic}")
+
+    def get_all_topics(self) -> Dict[str, List[str]]:
+        """
+        Ritorna tutti i topic nel grafo.
+
+        Returns:
+            Dict con {broader_topic: [narrower_topic1, narrower_topic2, ...]}
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run("""
+                MATCH (b:BroaderTopic)-[:HAS_SUBCATEGORY]->(n:NarrowerTopic)
+                RETURN b.name AS broader, collect(n.name) AS narrowers
+                ORDER BY b.name
+            """)
+
+            return {record["broader"]: record["narrowers"] for record in result}
+
+    def get_stats(self) -> Dict[str, int]:
+        """
+        Ritorna statistiche sul grafo.
+
+        Returns:
+            Dict con statistiche (num_broader_topics, num_narrower_topics, num_triplets)
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run("""
+                MATCH (b:BroaderTopic)
+                OPTIONAL MATCH (n:NarrowerTopic)
+                OPTIONAL MATCH (t:Triplet)
+                RETURN
+                    count(DISTINCT b) AS num_broader,
+                    count(DISTINCT n) AS num_narrower,
+                    count(DISTINCT t) AS num_triplets
+            """)
+
+            record = result.single()
+            return {
+                "num_broader_topics": record["num_broader"],
+                "num_narrower_topics": record["num_narrower"],
+                "num_triplets": record["num_triplets"]
+            }
+
+    def to_plotly_network(self, max_triplets_per_topic: int = 5):
+        """
+        Genera una visualizzazione network interattiva con Plotly.
+
+        Args:
+            max_triplets_per_topic: Numero massimo di triplette da mostrare per topic
+
+        Returns:
+            Figure Plotly
+        """
+        try:
+            import plotly.graph_objects as go
+            import networkx as nx
+        except ImportError:
+            logger.error("plotly or networkx not installed")
+            return None
+
+        # Recupera dati da Neo4j
+        with self.driver.session(database=self.database) as session:
+            result = session.run("""
+                MATCH (b:BroaderTopic)-[:HAS_SUBCATEGORY]->(n:NarrowerTopic)-[:CONTAINS]->(t:Triplet)
+                RETURN b.name AS broader, n.name AS narrower,
+                       collect({subject: t.subject, predicate: t.predicate, object: t.object})[..$max] AS triplets
+            """, max=max_triplets_per_topic)
+
+            # Costruisci grafo NetworkX
+            G = nx.DiGraph()
+            G.add_node('KG', label='Knowledge Graph', node_type='root')
+
+            node_id = 0
+            for record in result:
+                broader = record["broader"]
+                narrower = record["narrower"]
+                triplets = record["triplets"]
+
+                broader_id = f'broader_{node_id}'
+                node_id += 1
+
+                if not G.has_node(broader_id):
+                    G.add_node(broader_id, label=broader, node_type='broader')
+                    G.add_edge('KG', broader_id)
+
+                narrower_id = f'narrower_{node_id}'
+                node_id += 1
+
+                G.add_node(narrower_id, label=narrower, node_type='narrower')
+                G.add_edge(broader_id, narrower_id)
+
+                for triplet in triplets:
+                    triplet_id = f'triplet_{node_id}'
+                    node_id += 1
+
+                    label = f"{triplet['subject']}\n→{triplet['predicate']}\n→{triplet['object']}"
+                    G.add_node(triplet_id, label=label, node_type='triplet')
+                    G.add_edge(narrower_id, triplet_id)
+
+        # Layout e rendering (stesso codice di InMemoryKnowledgeGraph)
+        pos = nx.spring_layout(G, k=2, iterations=50, seed=42)
+
+        edge_x, edge_y = [], []
+        for edge in G.edges():
+            x0, y0 = pos[edge[0]]
+            x1, y1 = pos[edge[1]]
+            edge_x.extend([x0, x1, None])
+            edge_y.extend([y0, y1, None])
+
+        edge_trace = go.Scatter(
+            x=edge_x, y=edge_y,
+            line=dict(width=1, color='#888'),
+            hoverinfo='none',
+            mode='lines'
+        )
+
+        node_x, node_y, node_text, node_color, node_size = [], [], [], [], []
+
+        color_map = {
+            'root': '#4A90E2', 'broader': '#7ED321',
+            'narrower': '#F5A623', 'triplet': '#E8E8E8', 'more': '#D3D3D3'
+        }
+        size_map = {
+            'root': 30, 'broader': 25, 'narrower': 20, 'triplet': 12, 'more': 10
+        }
+
+        for node in G.nodes():
+            x, y = pos[node]
+            node_x.append(x)
+            node_y.append(y)
+            node_data = G.nodes[node]
+            node_text.append(node_data.get('label', node))
+            node_type = node_data.get('node_type', 'triplet')
+            node_color.append(color_map.get(node_type, '#888'))
+            node_size.append(size_map.get(node_type, 15))
+
+        node_trace = go.Scatter(
+            x=node_x, y=node_y,
+            mode='markers+text',
+            text=node_text,
+            textposition="top center",
+            textfont=dict(size=10),
+            hoverinfo='text',
+            marker=dict(color=node_color, size=node_size, line=dict(width=2, color='white'))
+        )
+
+        fig = go.Figure(data=[edge_trace, node_trace],
+                       layout=go.Layout(
+                           title=dict(text='Knowledge Graph Structure (Neo4j)', font=dict(size=16)),
+                           showlegend=False,
+                           hovermode='closest',
+                           margin=dict(b=20, l=5, r=5, t=40),
+                           xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                           yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                           height=600
+                       ))
+
+        return fig
+
+
+# ==================== IN-MEMORY STORAGE (Fallback) ====================
 
 class InMemoryKnowledgeGraph:
     """

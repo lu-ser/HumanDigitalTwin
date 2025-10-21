@@ -22,3 +22,10 @@ ontology:
 sessions:
   sessions_dir: "data/sessions"  # Directory for saving triplet extraction sessions
   auto_save: true  # Automatically save triplets after extraction
+
+knowledge_graph:
+  storage_type: "neo4j"  # "neo4j" or "in_memory"
+  neo4j:
+    uri: "bolt://localhost:7687"
+    database: "neo4j"  # Default database name
+    # Username and password are loaded from .env: NEO4J_USERNAME, NEO4J_PASSWORD
