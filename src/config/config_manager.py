@@ -24,7 +24,7 @@ class ConfigManager:
         self._config: Dict[str, Any] = {}
 
         # Carica le variabili d'ambiente
-        load_dotenv()
+        load_dotenv(override=True)
 
         # Carica la configurazione
         self._load_config()

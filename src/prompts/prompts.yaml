@@ -68,19 +68,40 @@ triplet_extraction:
 triplet_extraction_chunk:
   system: |
     You are an expert in extracting RDF triplets from natural language text.
-    You must return a JSON object with a "triplets" array containing objects with "subject", "predicate", and "object" fields.
+    You must return a JSON object with a "triplets" array containing objects with TYPED entities.
 
-    IMPORTANT STYLE GUIDELINES:
-    - Use English predicates in camelCase format (e.g., "playsGame", "goesTo", "drinks")
-    - Keep subjects and objects in their original language if they are proper nouns or specific terms
-    - Use clear, semantic predicates that describe relationships precisely
-    - Break down complex sentences into atomic triplets
+    **IMPORTANT - TYPED TRIPLETS (matrice 2x3):**
+    Each triplet has TWO rows:
+    1. **Instance row**: actual values (e.g., "Marco", "has_friend", "Luca")
+    2. **Type row**: semantic types (e.g., "Person", "Relationship", "Person")
 
-    Examples of good style:
-    - ("Luca", "goesTo", "casa di Lucia")
-    - ("Luca", "playsWith", "Lucia")
-    - ("Luca", "playsGame", "Dungeons and Dragons")
-    - ("Luca", "drinks", "birra")
+    **JSON Format:**
+    {{
+      "triplets": [
+        {{
+          "subject": {{"value": "Marco", "type": "Person"}},
+          "predicate": {{"value": "has_friend", "type": "Relationship"}},
+          "object": {{"value": "Luca", "type": "Person"}}
+        }}
+      ]
+    }}
+
+    **Entity Type Guidelines:**
+    - **People**: type = "Person" (e.g., Marco, Lucia, John)
+    - **Places/Locations**: type = "Place" (e.g., casa di Lucia, Roma, park)
+    - **Things/Objects**: type = "Thing" (e.g., birra, libro, computer)
+    - **Events/Activities**: type = "Event" (e.g., party, meeting, game session)
+    - **Time**: type = "DateTime" (e.g., "2024-01-01", "oggi", "sera")
+    - **Numbers**: type = "Number" (e.g., 30, 5.5, 100)
+    - **Concepts**: type = "Concept" (e.g., love, friendship, happiness)
+
+    **Predicate Type Guidelines:**
+    - Use type = "Relationship" for all predicates
+    - Use English camelCase format (e.g., "playsGame", "goesTo", "drinks")
+
+    Examples:
+    - {{"subject": {{"value": "Luca", "type": "Person"}}, "predicate": {{"value": "goesTo", "type": "Relationship"}}, "object": {{"value": "casa di Lucia", "type": "Place"}}}}
+    - {{"subject": {{"value": "Luca", "type": "Person"}}, "predicate": {{"value": "drinks", "type": "Relationship"}}, "object": {{"value": "birra", "type": "Thing"}}}}
   user_template: |
     Extract the most important RDF triplets from the following text.
     {context}
@@ -88,9 +109,9 @@ triplet_extraction_chunk:
     {chunk}
 
     Extract only the most relevant and significant triplets for the context.
-    Use English camelCase predicates (e.g., "playsWith", "goesTo", "drinks").
+    **IMPORTANT**: Each entity MUST have both "value" and "type" fields.
 
-    Return in JSON format: {{"triplets": [{{"subject": "...", "predicate": "...", "object": "..."}}]}}
+    Return in JSON format: {{"triplets": [{{"subject": {{"value": "...", "type": "..."}}, "predicate": {{"value": "...", "type": "Relationship"}}, "object": {{"value": "...", "type": "..."}}}}]}}
 
 triplet_summarization:
   system: |
@@ -106,7 +127,10 @@ triplet_summarization:
 text_augmentation:
   system: |
     You are an expert in refining and enriching RDF knowledge graphs.
-    You must return a JSON object with a "triplets" array containing objects with "subject", "predicate", and "object" fields.
+    You must return a JSON object with a "triplets" array containing TYPED entities.
+
+    **IMPORTANT - TYPED TRIPLETS:**
+    Each entity MUST have both "value" and "type" fields.
 
     Your task:
     1. Review the extracted triplets for correctness and completeness
@@ -114,11 +138,11 @@ text_augmentation:
     3. Break down complex triplets into atomic ones
     4. Ensure consistent predicate naming (camelCase English)
     5. Add temporal, spatial, or semantic connections between entities
+    6. **Verify and correct entity types** (Person, Place, Thing, Event, DateTime, Number, Concept)
 
     Examples of augmentation:
-    - If "Luca goesTo casa di Lucia" → add "casa di Lucia hasOwner Lucia"
-    - If "Luca playsGame D&D" and "Lucia playsGame D&D" → add "Luca isWith Lucia"
-    - If drinking activity → add "drinking occursAt casa di Lucia"
+    - If "Luca goesTo casa di Lucia" → add {{"subject": {{"value": "casa di Lucia", "type": "Place"}}, "predicate": {{"value": "hasOwner", "type": "Relationship"}}, "object": {{"value": "Lucia", "type": "Person"}}}}
+    - If "Luca playsGame D&D" and "Lucia playsGame D&D" → add {{"subject": {{"value": "Luca", "type": "Person"}}, "predicate": {{"value": "isWith", "type": "Relationship"}}, "object": {{"value": "Lucia", "type": "Person"}}}}
   user_template: |
     Review and augment the following extracted triplets.
 
@@ -126,7 +150,9 @@ text_augmentation:
     {triplets}
 
     Add missing implicit relationships and ensure consistency.
-    Return in JSON format: {{"triplets": [{{"subject": "...", "predicate": "...", "object": "..."}}]}}
+    **IMPORTANT**: Each entity MUST have both "value" and "type" fields.
+
+    Return in JSON format: {{"triplets": [{{"subject": {{"value": "...", "type": "..."}}, "predicate": {{"value": "...", "type": "Relationship"}}, "object": {{"value": "...", "type": "..."}}}}]}}
 
 iot_decide:
   system: |
@@ -256,11 +282,13 @@ validation_iterate:
     4. **Nonsensical**: Subject-Predicate-Object relationship doesn't make logical sense
     5. **Over-inferred**: Adds information not stated or implied in the original text
     6. **Malformed**: Missing components, unclear predicates, or structural errors
+    7. **Wrong Types**: Entity types don't match their values (e.g., "Marco" typed as "Place")
 
     **Keep triplets that are:**
     - Accurately extracted from the text
     - Semantically consistent with each other
     - Logically coherent
+    - Properly typed (Person, Place, Thing, Event, DateTime, Number, Concept)
     - Useful for representing the user's knowledge graph
     - Properly inferred (reasonable implications from the text)
 
@@ -268,6 +296,7 @@ validation_iterate:
     - Be CONSERVATIVE: only remove clearly problematic triplets
     - The goal is a CLEAN, CONSISTENT knowledge graph
     - Return ONLY the validated triplets (don't explain removals in the JSON)
+    - Each entity MUST have both "value" and "type" fields
     - If unsure, KEEP the triplet
 
     This is iteration {iteration}/3. You're refining the triplet set progressively.
@@ -280,9 +309,10 @@ validation_iterate:
 
     **Task:**
     Validate these triplets against the original text. Remove inconsistent, incorrect, or redundant triplets.
+    **IMPORTANT**: Each entity MUST have both "value" and "type" fields.
 
     Return ONLY the validated triplets in JSON format:
-    {{"triplets": [{{"subject": "...", "predicate": "...", "object": "..."}}]}}
+    {{"triplets": [{{"subject": {{"value": "...", "type": "..."}}, "predicate": {{"value": "...", "type": "Relationship"}}, "object": {{"value": "...", "type": "..."}}}}]}}
 
 iot_augmentation:
   system: |

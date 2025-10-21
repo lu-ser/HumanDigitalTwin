@@ -17,7 +17,7 @@ ontology:
   cache_dir: "data/ontology/cache"
   embedding_provider: "cohere"  # cohere, mistral, gemma, qwen
   validation_threshold: 0.5  # Minimum confidence score for valid triplets
-  rate_limit_delay: 0.5  # Delay between embedding API calls (seconds) - increased for free tier
+  rate_limit_delay: 2.0  # Delay between embedding API calls (seconds) - 2.0+ recommended for Cohere trial (prevents 429 errors)
 
 sessions:
   sessions_dir: "data/sessions"  # Directory for saving triplet extraction sessions

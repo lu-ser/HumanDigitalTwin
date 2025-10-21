@@ -11,11 +11,17 @@ import operator
 
 
 # Pydantic models per structured output
+class TripletEntity(BaseModel):
+    """Entità con valore e tipo."""
+    value: str = Field(description="Valore dell'entità (es. 'Marco')")
+    type: str = Field(description="Tipo/classe dell'entità (es. 'Person', 'Location', 'Integer')")
+
+
 class Triplet(BaseModel):
-    """Singola tripletta RDF."""
-    subject: str = Field(description="Soggetto della tripletta")
-    predicate: str = Field(description="Predicato/relazione della tripletta")
-    object: Optional[str] = Field(default="", description="Oggetto della tripletta")
+    """Singola tripletta RDF con tipizzazione (matrice 2x3: instance + type)."""
+    subject: TripletEntity = Field(description="Soggetto della tripletta con tipo")
+    predicate: TripletEntity = Field(description="Predicato/relazione della tripletta con tipo")
+    object: TripletEntity = Field(description="Oggetto della tripletta con tipo")
 
 
 class TripletList(BaseModel):
@@ -26,7 +32,7 @@ class TripletList(BaseModel):
         """Filtra solo le triplette valide (con subject, predicate e object non vuoti)."""
         return [
             t for t in self.triplets
-            if t.subject and t.predicate and t.object
+            if t.subject.value and t.predicate.value and t.object.value
         ]
 
 
@@ -353,13 +359,13 @@ class TripletExtractionGraph:
             llm_with_structure = self.llm.with_structured_output(TripletList, method="json_mode")
             response = llm_with_structure.invoke(lc_messages)
 
-            # Filtra solo triplette valide e converti da Pydantic a dict
+            # Filtra solo triplette valide e converti da Pydantic a dict (matrice 2x3)
             valid_triplets = response.filter_valid()
             new_triplets = [
                 {
-                    "subject": t.subject,
-                    "predicate": t.predicate,
-                    "object": t.object
+                    "subject": {"value": t.subject.value, "type": t.subject.type},
+                    "predicate": {"value": t.predicate.value, "type": t.predicate.type},
+                    "object": {"value": t.object.value, "type": t.object.type}
                 }
                 for t in valid_triplets
             ]
@@ -507,7 +513,7 @@ class TripletExtractionGraph:
             return {"augmented_triplets": []}
 
         triplets_str = "\n".join([
-            f"- {t.get('subject', '')} {t.get('predicate', '')} {t.get('object', '')}"
+            f"- {t.get('subject', {}).get('value', '')} {t.get('predicate', {}).get('value', '')} {t.get('object', {}).get('value', '')}"
             for t in triplets
         ])
 
@@ -536,13 +542,13 @@ class TripletExtractionGraph:
             llm_with_structure = self.llm.with_structured_output(TripletList, method="json_mode")
             response = llm_with_structure.invoke(lc_messages)
 
-            # Filtra solo triplette valide e converti da Pydantic a dict
+            # Filtra solo triplette valide e converti da Pydantic a dict (matrice 2x3)
             valid_triplets = response.filter_valid()
             augmented = [
                 {
-                    "subject": t.subject,
-                    "predicate": t.predicate,
-                    "object": t.object
+                    "subject": {"value": t.subject.value, "type": t.subject.type},
+                    "predicate": {"value": t.predicate.value, "type": t.predicate.type},
+                    "object": {"value": t.object.value, "type": t.object.type}
                 }
                 for t in valid_triplets
             ]
@@ -598,7 +604,7 @@ class TripletExtractionGraph:
 
         # Prepara le triplette per il prompt
         triplets_str = "\n".join([
-            f"- {t.get('subject', '')} {t.get('predicate', '')} {t.get('object', '')}"
+            f"- {t.get('subject', {}).get('value', '')} {t.get('predicate', {}).get('value', '')} {t.get('object', {}).get('value', '')}"
             for t in augmented_triplets
         ])
 
@@ -892,7 +898,7 @@ class TripletExtractionGraph:
 
             # Prepara il prompt per la generazione finale
             triplets_str = "\n".join([
-                f"- {t.get('subject', '')} {t.get('predicate', '')} {t.get('object', '')}"
+                f"- {t.get('subject', {}).get('value', '')} {t.get('predicate', {}).get('value', '')} {t.get('object', {}).get('value', '')}"
                 for t in augmented_triplets
             ])
 
@@ -913,7 +919,15 @@ Generate triplets using predicates like:
 - measuredAt, recordedAt, detectedActivity
 - associatedWith, relatedTo
 
-Return ONLY valid triplets in JSON format: {{"triplets": [{{"subject": "...", "predicate": "...", "object": "..."}}]}}
+**IMPORTANT**: Each entity MUST have both "value" and "type" fields.
+- People/devices: type = "Person" or "Thing"
+- Sensor values: type = "Number" or "Thing"
+- Timestamps: type = "DateTime"
+- Locations: type = "Place"
+- All predicates: type = "Relationship"
+
+Return ONLY valid triplets in JSON format:
+{{"triplets": [{{"subject": {{"value": "...", "type": "..."}}, "predicate": {{"value": "...", "type": "Relationship"}}, "object": {{"value": "...", "type": "..."}}}}]}}
 """)
 
             conversation.append(final_prompt)
@@ -930,13 +944,13 @@ Return ONLY valid triplets in JSON format: {{"triplets": [{{"subject": "...", "p
             llm_with_structure = self.llm.with_structured_output(TripletList, method="json_mode")
             response = llm_with_structure.invoke(conversation)
 
-            # Filtra e converti
+            # Filtra e converti (matrice 2x3)
             valid_triplets = response.filter_valid()
             iot_triplets = [
                 {
-                    "subject": t.subject,
-                    "predicate": t.predicate,
-                    "object": t.object
+                    "subject": {"value": t.subject.value, "type": t.subject.type},
+                    "predicate": {"value": t.predicate.value, "type": t.predicate.type},
+                    "object": {"value": t.object.value, "type": t.object.type}
                 }
                 for t in valid_triplets
             ]
@@ -1008,7 +1022,7 @@ Return ONLY valid triplets in JSON format: {{"triplets": [{{"subject": "...", "p
         # Prepara prompt
         input_text = state.get("input_text", "")
         triplets_str = "\n".join([
-            f"- {t.get('subject', '')} {t.get('predicate', '')} {t.get('object', '')}"
+            f"- {t.get('subject', {}).get('value', '')} {t.get('predicate', {}).get('value', '')} {t.get('object', {}).get('value', '')}"
             for t in all_triplets
         ])
 
@@ -1088,7 +1102,7 @@ Return ONLY valid triplets in JSON format: {{"triplets": [{{"subject": "...", "p
             self.logger.console.print(f"[dim]Validating {len(current_triplets)} triplets against original text[/dim]")
 
         triplets_str = "\n".join([
-            f"{i+1}. {t.get('subject', '')} {t.get('predicate', '')} {t.get('object', '')}"
+            f"{i+1}. {t.get('subject', {}).get('value', '')} {t.get('predicate', {}).get('value', '')} {t.get('object', {}).get('value', '')}"
             for i, t in enumerate(current_triplets)
         ])
 
@@ -1118,9 +1132,16 @@ Return ONLY valid triplets in JSON format: {{"triplets": [{{"subject": "...", "p
             llm_with_structure = self.llm.with_structured_output(TripletList, method="json_mode")
             response = llm_with_structure.invoke(lc_messages)
 
-            # Filtra triplette valide
+            # Filtra triplette valide (matrice 2x3)
             valid = response.filter_valid()
-            validated = [{"subject": t.subject, "predicate": t.predicate, "object": t.object} for t in valid]
+            validated = [
+                {
+                    "subject": {"value": t.subject.value, "type": t.subject.type},
+                    "predicate": {"value": t.predicate.value, "type": t.predicate.type},
+                    "object": {"value": t.object.value, "type": t.object.type}
+                }
+                for t in valid
+            ]
 
             # Identifica rimosse
             removed_count = len(current_triplets) - len(validated)

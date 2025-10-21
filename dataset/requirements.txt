@@ -1,0 +1,21 @@
+# Dataset Generation Framework Requirements
+
+# Core
+langgraph>=0.0.20
+langchain>=0.1.0
+langchain-groq>=0.0.1
+langchain-core>=0.1.0
+
+# LLM & AI
+groq>=0.4.0
+
+# Data handling
+pydantic>=2.0.0
+pyyaml>=6.0.0
+python-dotenv>=1.0.0
+
+# Visualization
+streamlit>=1.31.0
+
+# Utils
+requests>=2.31.0

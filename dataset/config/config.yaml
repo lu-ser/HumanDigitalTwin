@@ -1,0 +1,23 @@
+# Dataset Generation Configuration
+
+generation:
+  num_scenes: 5  # Number of scenes to generate per profile
+  output_format: "json"  # json, csv, or both
+  output_dir: "output"
+  include_timestamp: true  # Add timestamp to output filename
+
+llm:
+  provider: "groq"
+  model: "meta-llama/llama-4-scout-17b-16e-instruct"
+  temperature: 0.7
+  max_tokens: 2000
+
+logging:
+  enable: true
+  level: "info"  # debug, info, warning, error
+  save_logs: true
+  log_dir: "logs"
+
+graph:
+  save_diagram: true
+  diagram_path: "assets/dataset_graph.png"

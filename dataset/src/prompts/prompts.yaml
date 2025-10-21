@@ -1,0 +1,210 @@
+# Prompts for Dataset Generation Pipeline
+# All prompts are in English
+
+scene_generation:
+  system: |
+    You are a life scene generator. Given a person's profile, you generate realistic scenes from their daily life.
+
+    IMPORTANT: Write scenes as if they are being RECORDED by a voice recorder that the person is wearing.
+    The person KNOWS they are being recorded and describes what they're doing or talks with others.
+
+    Scene format:
+    - Written as PURE SPOKEN DIALOGUE only (no sound effects, no actions in brackets/asterisks)
+    - Use newlines to separate different moments or speakers
+    - Natural speech patterns, casual language
+    - Include conversations with others (greetings, small talk, plans)
+    - Person narrates their activities: "I'm going for a run now", "Time to make breakfast"
+
+    DO NOT include:
+    - Sound effects: [door closes], [phone rings], [footsteps]
+    - Action descriptions: *yawn*, *sigh*, *stretches*, *typing sounds*
+    - Emotional markers: *happily*, *tiredly*
+
+    Examples of GOOD scenes:
+    - "Okay it's 7 AM time to get up.\nLet me check my phone.\nOh message from Luca.\nHey man wanna grab coffee later?\nSure why not.\nAlright I'm gonna go for a run first."
+    - "Ciao Maria! Come stai?\nBene bene e tu?\nYes yes the project is going well.\nWe should meet Thursday for lunch what do you think?\nSounds perfect!"
+    - "Finished that email.\nTime for a break.\nI'll make some coffee.\nWhere did I put those beans.\nAh here they are."
+
+    Examples of BAD scenes:
+    - "*yawn* Okay it's 7 AM [alarm ringing] *stretches*" (NO sound effects or actions!)
+    - "Marco wakes up at 7 AM and checks his phone." (NO third person narrative!)
+
+    Generate scenes that provide enough context for health monitoring devices to capture meaningful data.
+
+  user_template: |
+    Profile:
+    {profile}
+    {previous_scenes}
+    Generate scene #{scene_number} of {total_scenes}.
+
+    IMPORTANT: Make this scene DIFFERENT from previous scenes:
+    - Use different days and times of day
+    - Show different activities (don't repeat the same activity)
+    - Vary the conversations and social interactions
+    - Explore different aspects of the person's life
+
+    Remember: ONLY spoken dialogue use newlines to separate moments NO sound effects or action markers!
+
+    Return ONLY a JSON object with this structure:
+    {{
+      "scene_id": {scene_number},
+      "day": "Monday/Tuesday/etc",
+      "time": "morning/afternoon/evening/night",
+      "description": "Recorded dialogue here"
+    }}
+
+device_data_generation:
+  system: |
+    You are a device data generator. Given a life scene, you generate plausible sensor data from personal and smart home devices.
+
+    Available devices:
+    {devices_config}
+
+    For each scene, analyze what devices would capture and generate realistic data within the specified ranges.
+    Consider:
+    - Activity level (sedentary, light, moderate, intense)
+    - Time of day (affects heart rate, body temp, home lighting, thermostat)
+    - Context (work, exercise, sleep, meals, home/away)
+    - Location (at home, outside, traveling)
+    - Realistic correlations (high steps = high heart rate, sleep = low movement, nighttime = lights off, away = doors locked)
+
+    Smart home data should reflect:
+    - Doors/windows: locked when sleeping or away, open when at home during day
+    - Temperature/humidity: comfortable range when at home, may vary when away
+    - Motion sensors: active when person is at home, inactive when away
+    - Lights: on when active at home, off when sleeping or away
+    - Alarm: armed when away or sleeping, disarmed when at home and awake
+    - Gas/smoke: always false (safe) unless there's an emergency scenario
+
+  user_template: |
+    Scene:
+    {scene_description}
+
+    Generate plausible device data for this scene, including both personal devices and smart home sensors.
+
+    Return ONLY a JSON object with this structure:
+    {{
+      "smartwatch": {{"heart_rate": [values], "steps": value, ...}},
+      "gps": {{"latitude": value, "longitude": value, ...}},
+      "smartphone": {{"screen_time_minutes": value, ...}},
+      "smartring": {{"temperature": value, "hrv": value, ...}},
+      "smart_home": {{"doors_status": {{}}, "windows_status": {{}}, "indoor_temperature": value, ...}}
+    }}
+
+calendar_generation:
+  system: |
+    You are a calendar event generator. Given a life scene, you generate plausible calendar events that would be scheduled for that time period.
+
+    Calendar events should be REALISTIC like a real person's calendar:
+    - Work meetings: "Q3 Review", "Sprint Planning", "1:1 with Manager", "Client Call", "Team Sync"
+    - Doctor appointments: "Dentist Appointment", "Annual Checkup", "Physical Therapy"
+    - Social events: "Dinner with Sarah", "Book Club", "Game Night", "Birthday Party - Marco"
+    - Personal tasks: "Gym Session", "Grocery Shopping", "Car Service", "Haircut"
+    - Reminders: "Submit Report", "Pay Bills", "Renew Insurance"
+
+    DO NOT create events for obvious activities like "Morning Run" or "Breakfast" - these are NOT typically in calendars.
+    Only include events that a real person would actually schedule/calendar.
+
+    Format events like a real calendar app (Google Calendar, Outlook, etc.)
+
+  user_template: |
+    Scene:
+    {scene_description}
+
+    Generate 0-3 calendar events relevant to this scene (only actual scheduled events, not routine activities).
+
+    Return ONLY a JSON object with this structure:
+    {{
+      "events": [
+        {{
+          "title": "Event title",
+          "start_time": "HH:MM",
+          "end_time": "HH:MM",
+          "location": "Place or Online",
+          "description": "Optional details"
+        }}
+      ]
+    }}
+
+messaging_generation:
+  system: |
+    You are a messaging app data generator. Given a life scene, you generate plausible messages that the person might send/receive during that time.
+
+    Messages should:
+    - Be coherent with the scene (work messages during work, personal during free time)
+    - Include realistic conversation patterns
+    - Vary in formality (work, friends, family)
+    - Include sender/receiver, timestamp, platform
+    - Be brief and natural (like real messages)
+
+    Common platforms: WhatsApp, SMS, Telegram, Slack, Email
+
+  user_template: |
+    Scene:
+    {scene_description}
+
+    Profile:
+    {profile}
+
+    Generate 0-8 messages relevant to this scene.
+
+    Return ONLY a JSON object with this structure:
+    {{
+      "messages": [
+        {{
+          "platform": "WhatsApp/SMS/Slack/Email",
+          "direction": "sent/received",
+          "contact": "Contact name",
+          "timestamp": "HH:MM",
+          "content": "Message text"
+        }}
+      ]
+    }}
+
+deficiency_detection:
+  system: |
+    You are a health deficiency detection agent. Given a life scene and associated device data, you identify potential health deficiencies.
+
+    Health categories to evaluate:
+    {deficiencies_config}
+
+    For each category, assess:
+    - Is the data sufficient to evaluate?
+    - Are values within healthy ranges?
+    - Are there concerning patterns?
+    - What is missing or insufficient?
+
+    IMPORTANT: Use the provided tools to validate metrics, but ONLY call tools when you have actual numeric values.
+    DO NOT call tools with null/missing values - instead, mark that category as UNKNOWN in your final response.
+
+    Example:
+    - If sleep_duration is available in device data → call validate_sleep_duration tool
+    - If sleep_duration is null/missing → DO NOT call tool, set sleep status to UNKNOWN
+
+  user_template: |
+    Scene:
+    {scene_description}
+
+    Device Data:
+    {device_data}
+
+    Calendar Events:
+    {calendar_events}
+
+    Messages:
+    {messages}
+
+    Analyze this scene and detect health deficiencies.
+    ONLY call validation tools for metrics that have actual values (not null or missing).
+
+    Return ONLY a JSON object with this structure:
+    {{
+      "physical_activity": {{"status": "OK/WARNING/INSUFFICIENT", "reason": "Explanation"}},
+      "sleep": {{"status": "OK/WARNING/INSUFFICIENT/UNKNOWN", "reason": "Explanation"}},
+      "stress": {{"status": "OK/WARNING/HIGH/UNKNOWN", "reason": "Explanation"}},
+      "workload": {{"status": "OK/WARNING/OVERLOADED/UNKNOWN", "reason": "Explanation"}},
+      "social_interaction": {{"status": "OK/WARNING/INSUFFICIENT", "reason": "Explanation"}},
+      "environment": {{"status": "OK/COLD/HOT/NOISY/DARK/UNKNOWN", "reason": "Explanation"}},
+      "emotional_tone": {{"status": "POSITIVE/NEUTRAL/NEGATIVE/UNKNOWN", "reason": "Explanation"}},
+      "digital_behavior": {{"status": "BALANCED/OVERCONNECTED/INACTIVE/UNKNOWN", "reason": "Explanation"}}
+    }}

@@ -1,0 +1,171 @@
+# Device specifications and plausible data ranges
+
+smartwatch:
+  description: "Wrist-worn fitness tracker (Fitbit, Apple Watch, Garmin, etc.)"
+  sensors:
+    - heart_rate_monitor
+    - accelerometer
+    - gyroscope
+    - altimeter
+  metrics:
+    heart_rate:
+      unit: "bpm"
+      rest_range: [50, 80]
+      light_activity_range: [80, 120]
+      moderate_activity_range: [120, 150]
+      intense_activity_range: [150, 190]
+    steps:
+      unit: "count"
+      range: [0, 25000]
+      typical_daily: [5000, 15000]
+    calories_burned:
+      unit: "kcal"
+      range: [50, 800]
+      typical_daily: [1800, 3000]
+    distance:
+      unit: "km"
+      range: [0.0, 30.0]
+    floors_climbed:
+      unit: "count"
+      range: [0, 50]
+    active_minutes:
+      unit: "minutes"
+      range: [0, 300]
+    sleep_duration:
+      unit: "minutes"
+      range: [0, 600]
+      healthy_range: [360, 540]
+
+gps:
+  description: "GPS tracking (phone, watch, or standalone)"
+  sensors:
+    - gps_receiver
+  metrics:
+    latitude:
+      unit: "degrees"
+      range: [-90.0, 90.0]
+    longitude:
+      unit: "degrees"
+      range: [-180.0, 180.0]
+    altitude:
+      unit: "meters"
+      range: [0, 3000]
+    speed:
+      unit: "km/h"
+      range: [0.0, 40.0]
+    accuracy:
+      unit: "meters"
+      range: [3.0, 50.0]
+
+smartphone:
+  description: "Personal smartphone"
+  sensors:
+    - accelerometer
+    - gyroscope
+    - proximity_sensor
+    - ambient_light_sensor
+  metrics:
+    screen_time_minutes:
+      unit: "minutes"
+      range: [0, 720]
+      typical_daily: [120, 360]
+    app_usage:
+      unit: "count"
+      categories: ["social", "productivity", "entertainment", "health", "communication"]
+    notifications_count:
+      unit: "count"
+      range: [0, 200]
+    battery_level:
+      unit: "percentage"
+      range: [0, 100]
+    unlock_count:
+      unit: "count"
+      range: [0, 150]
+
+smartring:
+  description: "Ring-worn health tracker (Oura, etc.)"
+  sensors:
+    - heart_rate_monitor
+    - temperature_sensor
+    - accelerometer
+  metrics:
+    body_temperature:
+      unit: "celsius"
+      range: [35.5, 38.0]
+      normal_range: [36.1, 37.2]
+    heart_rate_variability:
+      unit: "ms"
+      range: [20, 120]
+      healthy_range: [50, 100]
+    spo2:
+      unit: "percentage"
+      range: [90, 100]
+      healthy_range: [95, 100]
+    skin_temperature:
+      unit: "celsius"
+      range: [30.0, 36.0]
+    sleep_score:
+      unit: "score"
+      range: [0, 100]
+      good_range: [70, 100]
+
+smart_home:
+  description: "Smart home sensors and devices"
+  sensors:
+    - door_window_sensors
+    - motion_sensors
+    - temperature_sensors
+    - humidity_sensors
+    - gas_leak_detector
+    - smoke_detector
+    - security_system
+  metrics:
+    doors_status:
+      unit: "status"
+      values: ["open", "closed", "locked"]
+      locations: ["front_door", "back_door", "garage"]
+    windows_status:
+      unit: "status"
+      values: ["open", "closed", "locked"]
+      locations: ["living_room", "bedroom", "kitchen", "bathroom"]
+    indoor_temperature:
+      unit: "celsius"
+      range: [15.0, 30.0]
+      comfortable_range: [19.0, 24.0]
+    indoor_humidity:
+      unit: "percentage"
+      range: [20, 80]
+      comfortable_range: [30, 60]
+    gas_detected:
+      unit: "boolean"
+      values: [true, false]
+      safe_value: false
+    smoke_detected:
+      unit: "boolean"
+      values: [true, false]
+      safe_value: false
+    co2_level:
+      unit: "ppm"
+      range: [400, 2000]
+      safe_range: [400, 1000]
+      warning_range: [1000, 1500]
+    motion_detected:
+      unit: "boolean"
+      values: [true, false]
+      locations: ["living_room", "bedroom", "kitchen", "hallway", "bathroom"]
+    alarm_status:
+      unit: "status"
+      values: ["armed", "disarmed", "triggered"]
+      safe_value: "disarmed"
+    light_status:
+      unit: "status"
+      values: ["on", "off", "dimmed"]
+      locations: ["living_room", "bedroom", "kitchen", "bathroom", "hallway"]
+    thermostat_setting:
+      unit: "celsius"
+      range: [16.0, 28.0]
+      typical_range: [19.0, 22.0]
+    energy_consumption:
+      unit: "kWh"
+      hourly_range: [0.1, 5.0]
+      typical_hourly: [0.5, 2.0]

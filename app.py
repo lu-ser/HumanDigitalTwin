@@ -166,17 +166,44 @@ def main():
                             triplets = result.get("triplets", [])
                             st.subheader(f"Triplette estratte: {len(triplets)}")
                             if triplets:
-                                st.json(triplets)
+                                # Visualizzazione tabellare con tipi (matrice 2x3)
+                                for idx, t in enumerate(triplets[:10], 1):  # Mostra prime 10
+                                    with st.expander(f"Tripletta #{idx}: {t.get('subject', {}).get('value', '')} → {t.get('predicate', {}).get('value', '')} → {t.get('object', {}).get('value', '')}"):
+                                        # Riga 1: Values
+                                        st.markdown("**Valori (Instance):**")
+                                        st.code(f"{t.get('subject', {}).get('value', '')}  →  {t.get('predicate', {}).get('value', '')}  →  {t.get('object', {}).get('value', '')}")
+
+                                        # Riga 2: Types
+                                        st.markdown("**Tipi (Class):**")
+                                        st.code(f"{t.get('subject', {}).get('type', 'N/A')}  →  {t.get('predicate', {}).get('type', 'N/A')}  →  {t.get('object', {}).get('type', 'N/A')}")
+
+                                if len(triplets) > 10:
+                                    st.info(f"Mostrate prime 10 triplette. Totale: {len(triplets)}")
+
+                                # JSON completo in expander
+                                with st.expander("🔍 Visualizza JSON completo"):
+                                    st.json(triplets)
 
                             # Triplette augmented
                             augmented = result.get("augmented_triplets", [])
                             if augmented:
-                                st.subheader(f"Triplette augmented (IoT): {len(augmented)}")
-                                st.json(augmented)
+                                st.subheader(f"Triplette augmented (text + IoT): {len(augmented)}")
+                                for idx, t in enumerate(augmented[:10], 1):
+                                    with st.expander(f"Augmented #{idx}: {t.get('subject', {}).get('value', '')} → {t.get('predicate', {}).get('value', '')} → {t.get('object', {}).get('value', '')}"):
+                                        st.markdown("**Valori:**")
+                                        st.code(f"{t.get('subject', {}).get('value', '')}  →  {t.get('predicate', {}).get('value', '')}  →  {t.get('object', {}).get('value', '')}")
+                                        st.markdown("**Tipi:**")
+                                        st.code(f"{t.get('subject', {}).get('type', 'N/A')}  →  {t.get('predicate', {}).get('type', 'N/A')}  →  {t.get('object', {}).get('type', 'N/A')}")
+
+                                if len(augmented) > 10:
+                                    st.info(f"Mostrate prime 10 augmented. Totale: {len(augmented)}")
+
+                                with st.expander("🔍 Visualizza JSON completo"):
+                                    st.json(augmented)
 
                             # Triplette finali
                             final = result.get("final_triplets", [])
-                            st.subheader(f"Totale triplette finali: {len(final)}")
+                            st.subheader(f"✅ Totale triplette finali: {len(final)}")
 
                             # Salva in session_state per riuso nella tab Ontology
                             st.session_state['extracted_triplets'] = final
@@ -356,10 +383,10 @@ def main():
                 rate_limit = st.slider(
                     "Rate limit (sec):",
                     min_value=0.0,
-                    max_value=5.0,
-                    value=ontology_config.get('rate_limit_delay', 0.5),
-                    step=0.1,
-                    help="Pausa tra richieste API per embeddings (0.5+ raccomandato per account free)"
+                    max_value=10.0,
+                    value=ontology_config.get('rate_limit_delay', 2.0),
+                    step=0.5,
+                    help="Pausa tra richieste API (2.0+ raccomandato per Cohere trial, evita rate limit 429)"
                 )
 
             # Inizializza servizi ontology (cached)
@@ -507,12 +534,24 @@ def main():
                     for idx, triplet in enumerate(triplets_to_validate):
                         status_text.text(f"Validazione tripletta {idx + 1}/{len(triplets_to_validate)}...")
 
-                        subject = triplet.get('subject', '')
-                        predicate = triplet.get('predicate', '')
-                        obj = triplet.get('object', '')
+                        # Estrai valori e tipi dalla matrice 2x3
+                        subject_data = triplet.get('subject', {})
+                        predicate_data = triplet.get('predicate', {})
+                        obj_data = triplet.get('object', {})
 
-                        if subject and predicate and obj:
-                            result = matcher.match_triple(subject, predicate, obj)
+                        subject_value = subject_data.get('value', '') if isinstance(subject_data, dict) else subject_data
+                        predicate_value = predicate_data.get('value', '') if isinstance(predicate_data, dict) else predicate_data
+                        obj_value = obj_data.get('value', '') if isinstance(obj_data, dict) else obj_data
+
+                        subject_type = subject_data.get('type', None) if isinstance(subject_data, dict) else None
+                        predicate_type = predicate_data.get('type', None) if isinstance(predicate_data, dict) else None
+                        obj_type = obj_data.get('type', None) if isinstance(obj_data, dict) else None
+
+                        if subject_value and predicate_value and obj_value:
+                            result = matcher.match_triple(
+                                subject_value, predicate_value, obj_value,
+                                subject_type, predicate_type, obj_type
+                            )
                             validated_results.append(result)
 
                         progress_bar.progress((idx + 1) / len(triplets_to_validate))
@@ -571,26 +610,79 @@ def main():
                                     # Tripletta originale
                                     st.markdown(f"**Tripletta:** `{result['subject']['value']}` → `{result['predicate']['value']}` → `{result['object']['value']}`")
 
-                                    # Matching info
+                                    # Matching info (matrice 2x3: LLM types + Schema.org types)
                                     col_s, col_p, col_o = st.columns(3)
 
                                     with col_s:
                                         st.markdown("**🎯 Subject**")
-                                        st.markdown(f"Class: `{result['subject']['matched_class']}`")
+                                        orig_type = result['subject'].get('original_type')
+                                        if orig_type:
+                                            st.markdown(f"LLM Type: `{orig_type}`")
+                                        st.markdown(f"Schema.org: `{result['subject']['matched_class']}`")
                                         st.markdown(f"Score: `{result['subject']['confidence']:.3f}`")
 
                                     with col_p:
                                         st.markdown("**🔗 Predicate**")
-                                        st.markdown(f"Property: `{result['predicate']['matched_property']}`")
+                                        orig_type = result['predicate'].get('original_type')
+                                        if orig_type:
+                                            st.markdown(f"LLM Type: `{orig_type}`")
+                                        st.markdown(f"Schema.org: `{result['predicate']['matched_property']}`")
                                         st.markdown(f"Score: `{result['predicate']['confidence']:.3f}`")
 
                                     with col_o:
                                         st.markdown("**📍 Object**")
-                                        st.markdown(f"Class: `{result['object']['matched_class']}`")
+                                        orig_type = result['object'].get('original_type')
+                                        if orig_type:
+                                            st.markdown(f"LLM Type: `{orig_type}`")
+                                        st.markdown(f"Schema.org: `{result['object']['matched_class']}`")
                                         st.markdown(f"Score: `{result['object']['confidence']:.3f}`")
 
                                     # Branch path
                                     st.markdown(f"**🌳 Path:** {result.get('branch_path', 'N/A')}")
+
+                                    # Branch strategies comparison (matrice 3 strategie)
+                                    with st.expander("🌳 Branch Strategies (3 metodi di esplorazione)"):
+                                        all_branches = result.get('all_branches', [])
+                                        if all_branches:
+                                            # Raggruppa per method_used
+                                            predicate_driven = [b for b in all_branches if b.get('method_used') == 'predicate_driven']
+                                            subject_driven = [b for b in all_branches if b.get('method_used') == 'subject_driven']
+                                            object_driven = [b for b in all_branches if b.get('method_used') == 'object_driven']
+
+                                            col1, col2, col3 = st.columns(3)
+
+                                            with col1:
+                                                st.markdown("**🔗 Predicate-Driven**")
+                                                st.caption("Predicate → Subject/Object")
+                                                if predicate_driven:
+                                                    best = predicate_driven[0]
+                                                    st.metric("Score μ", f"{best['mu']:.3f}")
+                                                    st.caption(f"Path: {best.get('branch_path', 'N/A')}")
+                                                else:
+                                                    st.caption("Nessun match trovato")
+
+                                            with col2:
+                                                st.markdown("**🎯 Subject-Driven**")
+                                                st.caption("Subject → Predicate → Object")
+                                                if subject_driven:
+                                                    best = subject_driven[0]
+                                                    st.metric("Score μ", f"{best['mu']:.3f}")
+                                                    st.caption(f"Path: {best.get('branch_path', 'N/A')}")
+                                                else:
+                                                    st.caption("Nessun match trovato")
+
+                                            with col3:
+                                                st.markdown("**📍 Object-Driven**")
+                                                st.caption("Object → Predicate → Subject")
+                                                if object_driven:
+                                                    best = object_driven[0]
+                                                    st.metric("Score μ", f"{best['mu']:.3f}")
+                                                    st.caption(f"Path: {best.get('branch_path', 'N/A')}")
+                                                else:
+                                                    st.caption("Nessun match trovato")
+
+                                            st.markdown("---")
+                                            st.markdown(f"**✅ Strategia scelta:** `{result.get('method_used', 'N/A')}` (score più alto)")
 
                                     # Top candidates (collapsible)
                                     with st.expander("🔍 Top Candidates"):
@@ -617,22 +709,31 @@ def main():
                                     # Tripletta originale
                                     st.markdown(f"**Tripletta:** `{result['subject']['value']}` → `{result['predicate']['value']}` → `{result['object']['value']}`")
 
-                                    # Matching info
+                                    # Matching info (matrice 2x3: LLM types + Schema.org types)
                                     col_s, col_p, col_o = st.columns(3)
 
                                     with col_s:
                                         st.markdown("**🎯 Subject**")
-                                        st.markdown(f"Class: `{result['subject']['matched_class']}`")
+                                        orig_type = result['subject'].get('original_type')
+                                        if orig_type:
+                                            st.markdown(f"LLM Type: `{orig_type}`")
+                                        st.markdown(f"Schema.org: `{result['subject']['matched_class']}`")
                                         st.markdown(f"Score: `{result['subject']['confidence']:.3f}`")
 
                                     with col_p:
                                         st.markdown("**🔗 Predicate**")
-                                        st.markdown(f"Property: `{result['predicate']['matched_property']}`")
+                                        orig_type = result['predicate'].get('original_type')
+                                        if orig_type:
+                                            st.markdown(f"LLM Type: `{orig_type}`")
+                                        st.markdown(f"Schema.org: `{result['predicate']['matched_property']}`")
                                         st.markdown(f"Score: `{result['predicate']['confidence']:.3f}`")
 
                                     with col_o:
                                         st.markdown("**📍 Object**")
-                                        st.markdown(f"Class: `{result['object']['matched_class']}`")
+                                        orig_type = result['object'].get('original_type')
+                                        if orig_type:
+                                            st.markdown(f"LLM Type: `{orig_type}`")
+                                        st.markdown(f"Schema.org: `{result['object']['matched_class']}`")
                                         st.markdown(f"Score: `{result['object']['confidence']:.3f}`")
 
                                     # Branch path

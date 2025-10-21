@@ -1,0 +1,130 @@
+# Core behavioral and contextual categories for intervention labeling
+
+sleep:
+  description: "Sleep duration and quality"
+  indicators:
+    - sleep_duration
+    - sleep_score
+    - wake_count
+    - bedtime_variability
+  thresholds:
+    duration_minimum_minutes: 360    # 6 hours
+    duration_recommended_minutes: 420  # 7 hours
+    duration_optimal_minutes: 480    # 8 hours
+    sleep_score_minimum: 60
+    variability_maximum_minutes: 90
+  evaluation:
+    OK: "Adequate sleep duration and quality"
+    WARNING: "Slightly irregular or short sleep"
+    INSUFFICIENT: "Poor sleep duration or rest quality"
+
+physical_activity:
+  description: "Level of daily physical movement"
+  indicators:
+    - steps_per_day
+    - active_minutes
+    - calories_burned
+  thresholds:
+    steps_minimum: 5000
+    steps_recommended: 10000
+    active_minutes_minimum: 30
+    active_minutes_recommended: 60
+  evaluation:
+    OK: "Sufficient daily activity"
+    WARNING: "Moderate reduction in movement"
+    INSUFFICIENT: "Low or sedentary activity"
+
+stress:
+  description: "Signs of physiological or behavioral stress"
+  indicators:
+    - heart_rate_variability
+    - resting_heart_rate
+    - message_sentiment
+    - screen_time
+  thresholds:
+    hrv_stress_threshold: 40          # low HRV = high stress
+    resting_hr_stress_threshold: 80   # high resting HR = high stress
+    negative_sentiment_ratio: 0.3
+  evaluation:
+    OK: "Normal stress indicators"
+    WARNING: "Some elevated stress signs"
+    HIGH: "Multiple strong stress indicators"
+
+workload:
+  description: "Amount of sustained work activity"
+  indicators:
+    - work_hours
+    - meeting_density
+    - breaks_taken
+  thresholds:
+    work_hours_max: 9
+    consecutive_meetings_max: 3
+    break_minimum_minutes_per_hour: 5
+  evaluation:
+    OK: "Healthy work rhythm"
+    WARNING: "Sustained focus with limited breaks"
+    OVERLOADED: "Excessive workload or continuous activity"
+
+social_interaction:
+  description: "Patterns of social and communication activity"
+  indicators:
+    - messages_sent_received
+    - social_calls
+    - in_person_meetings
+  thresholds:
+    messages_minimum_daily: 5
+    social_calls_minimum_weekly: 2
+    meetings_minimum_weekly: 1
+  evaluation:
+    OK: "Healthy social activity"
+    WARNING: "Reduced social contact"
+    LOW: "Minimal or no social interaction"
+
+environment:
+  description: "Environmental comfort conditions"
+  indicators:
+    - temperature
+    - noise_level
+    - light_level
+  thresholds:
+    temperature_optimal_min: 20
+    temperature_optimal_max: 26
+    noise_max_db: 65
+    light_min_lux: 150
+  evaluation:
+    OK: "Comfortable environment"
+    COLD: "Temperature below comfort range"
+    HOT: "Temperature above comfort range"
+    NOISY: "Noise exceeds comfort threshold"
+    DARK: "Insufficient light for activity"
+
+emotional_tone:
+  description: "User emotional expression from text or voice"
+  indicators:
+    - sentiment_score
+    - tone_energy
+    - language_valence
+  thresholds:
+    sentiment_negative: -0.3
+    sentiment_positive: 0.3
+  evaluation:
+    POSITIVE: "Positive or enthusiastic tone"
+    NEUTRAL: "Calm or objective tone"
+    NEGATIVE: "Frustrated, bored, or tense tone"
+
+digital_behavior:
+  description: "Device and app usage patterns"
+  indicators:
+    - screen_time
+    - app_switches
+    - notification_count
+    - idle_periods
+  thresholds:
+    screen_time_max_hours: 6
+    app_switches_max_per_hour: 20
+    notification_frequency_max_per_hour: 10
+    idle_period_max_minutes: 60
+  evaluation:
+    BALANCED: "Normal digital behavior"
+    OVERCONNECTED: "High screen time or app switching"
+    INACTIVE: "Long idle or disconnected periods"
