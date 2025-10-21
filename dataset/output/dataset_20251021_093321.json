@@ -1,0 +1,1162 @@
+{
+  "profile": "Marco is a 32-year-old software engineer living in Milan. He works remotely from home most days, typically starting work at 9 AM and finishing around 6 PM. He enjoys running in the mornings 3 times a week and goes to the gym on weekends. Marco is generally health-conscious but sometimes skips breakfast when he has early meetings. He's sociable, often meeting friends for dinner or drinks on Friday evenings. He struggles with maintaining a consistent sleep schedule, especially when working on tight deadlines.",
+  "num_scenes": 7,
+  "current_scene_index": 7,
+  "scenes": [
+    {
+      "scene_id": 1,
+      "day": "Friday",
+      "time": "evening",
+      "description": "I'm heading out to meet Luca and Alessandro for dinner.\n\nCiao ragazzi!\nCiao Marco! Come va?\nTutto bene, grazie. E voi?\nSi si, stasera beviamo qualcosa.\nDove andiamo a mangiare?\nAl solito posto, via Lecco.\nPerfetto, io ho fame!"
+    },
+    {
+      "scene_id": 2,
+      "day": "Wednesday",
+      "time": "morning",
+      "description": "Okay it's 7:30 AM I'm getting ready for my run today.\nI'm planning to do 5 kilometers.\nThe weather looks good so far.\nI'll just grab my water bottle and headphones.\nHeading out the door now.\nIt's a bit chilly but feels good.\nI'm on pace so far.\nNeed to push a bit harder on the last kilometer."
+    },
+    {
+      "scene_id": 3,
+      "day": "Tuesday",
+      "time": "afternoon",
+      "description": "I'm taking a break from work.\n\nI'll grab a snack from the kitchen.\n\nHmm what's this noise?\n\nMy neighbor Giovanni is playing music again.\n\nI'll just go talk to him.\n\nCiao Giovanni scusa but could you keep it down a bit?\n\nSorry Marco I'll turn it down.\n\nGrazie mille appreciate it.\n\nNo problem I'll get back to work now."
+    },
+    {
+      "scene_id": 4,
+      "day": "Sunday",
+      "time": "morning",
+      "description": "I'm waking up around 10 AM.\n\nMy girlfriend Sofia is still sleeping.\n\nI'll make some coffee.\n\nCiao amore, vuoi un caffè?\n\nMmm sì per favore.\n\nI'm thinking of going to the gym today.\n\nSi, io pensavo di fare una sessione di pesi.\n\nOkay, io ti accompagno.\n\nWe should grab lunch at that new place afterwards.\n\nSì, ho sentito parlare bene di quel ristorante.\n\nShall we make a reservation?\n\nSì, meglio di sì."
+    },
+    {
+      "scene_id": 5,
+      "day": "Thursday",
+      "time": "afternoon",
+      "description": "I'm on a call with my colleague Emma about the project deadline.\n\nOkay so we need to finalize the report by tomorrow.\n\nYes I agree we should focus on the marketing strategy.\n\nCan you send me the latest draft?\n\nI'll review it and get back to you.\n\nSounds good thanks Emma.\n\nI'm wrapping up this call now I'll get back to work."
+    },
+    {
+      "scene_id": 6,
+      "day": "Saturday",
+      "time": "afternoon",
+      "description": "I'm heading to the gym with my friend Riccardo.\n\nHey man how's it going?\n\nTutto bene, grazie. E tu? Preparato per la palestra?\n\nSi si, devo farmi una bella fatica oggi.\n\nAhah, anch'io. Spero di non crepare sulla cyclette.\n\nDai non morirai, solo 30 minuti di cardio.\n\nSì, sì, facile a dirsi.\n\nOkay I'm putting on my headphones.\n\nI'm gonna start with some weights.\n\nHow's your week been so far?\n\nÈ stata una settimana piena, ma ci sono riuscito.\n\nE tu, riesci a dormire un po'?\n\nSì, ho dormito decentemente, finalmente.\n\nBene, bene. Ora iniziamo a sudare."
+    },
+    {
+      "scene_id": 7,
+      "day": "Monday",
+      "time": "evening",
+      "description": "I'm unwinding after a long day of work.\nI'm making some pasta for dinner.\nMy mom is calling me.\nCiao Marco! Come va?\nTutto bene, mamma. E tu?\nBene bene. Volevo solo sapere se vieni a trovarmi domani.\nSì, certo. Che ora pensi di essere libero?\nVerso le 2, va bene?\nPerfetto, ti aspetto."
+    }
+  ],
+  "device_data": [
+    {
+      "scene_id": 1,
+      "smartwatch": {
+        "heart_rate": [
+          80,
+          82,
+          85
+        ],
+        "steps": 500,
+        "active_minutes": 10,
+        "distance": 0.2
+      },
+      "gps": {
+        "latitude": 45.764043,
+        "longitude": 9.1775,
+        "accuracy": 5,
+        "altitude": 120,
+        "speed": 5.0
+      },
+      "smartphone": {
+        "screen_time_minutes": 20,
+        "notifications_count": 5,
+        "battery_level": 80,
+        "app_usage": {
+          "communication": 2,
+          "social": 1
+        }
+      },
+      "smartring": {
+        "body_temperature": 36.8,
+        "heart_rate_variability": 70,
+        "skin_temperature": 32.5
+      },
+      "smart_home": {
+        "doors_status": {
+          "front_door": "locked",
+          "back_door": "locked",
+          "garage": "locked"
+        },
+        "windows_status": {
+          "living_room": "closed",
+          "bedroom": "closed",
+          "kitchen": "closed"
+        },
+        "indoor_temperature": 22.0,
+        "indoor_humidity": 50,
+        "light_status": {
+          "living_room": "off",
+          "bedroom": "off",
+          "kitchen": "off"
+        },
+        "motion_detected": false,
+        "alarm_status": "armed",
+        "gas_detected": false,
+        "smoke_detected": false
+      }
+    },
+    {
+      "scene_id": 2,
+      "smartwatch": {
+        "heart_rate": [
+          120,
+          125,
+          130,
+          128,
+          132
+        ],
+        "steps": 6500,
+        "distance": 5.2,
+        "active_minutes": 35
+      },
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 10,
+        "altitude": 20,
+        "speed": 10.5
+      },
+      "smartphone": {
+        "battery_level": 80,
+        "notifications_count": 5,
+        "screen_time_minutes": 10
+      },
+      "smartring": {
+        "body_temperature": 37.5,
+        "heart_rate_variability": 80,
+        "skin_temperature": 32.5
+      },
+      "smart_home": {
+        "doors_status": {
+          "front_door": "open",
+          "back_door": "closed",
+          "garage": "closed"
+        },
+        "windows_status": {
+          "living_room": "closed",
+          "bedroom": "closed",
+          "kitchen": "closed"
+        },
+        "indoor_temperature": 20.5,
+        "indoor_humidity": 50,
+        "light_status": {
+          "living_room": "off",
+          "bedroom": "off",
+          "kitchen": "off"
+        },
+        "motion_detected": false,
+        "alarm_status": "disarmed"
+      }
+    },
+    {
+      "scene_id": 3,
+      "smartwatch": {
+        "heart_rate": [
+          72,
+          75,
+          78,
+          70
+        ],
+        "steps": 250,
+        "active_minutes": 15
+      },
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 10,
+        "speed": 0.0
+      },
+      "smartphone": {
+        "screen_time_minutes": 10,
+        "notifications_count": 2,
+        "battery_level": 80,
+        "app_usage": {
+          "communication": 2,
+          "entertainment": 0
+        }
+      },
+      "smartring": {
+        "body_temperature": 36.8,
+        "heart_rate_variability": 80,
+        "skin_temperature": 32.5
+      },
+      "smart_home": {
+        "doors_status": {
+          "front_door": "closed",
+          "back_door": "closed",
+          "garage": "closed"
+        },
+        "windows_status": {
+          "living_room": "closed",
+          "bedroom": "closed",
+          "kitchen": "closed"
+        },
+        "indoor_temperature": 22.5,
+        "indoor_humidity": 50,
+        "light_status": {
+          "living_room": "on",
+          "kitchen": "on"
+        },
+        "motion_detected": {
+          "living_room": true,
+          "kitchen": true
+        },
+        "alarm_status": "disarmed",
+        "co2_level": 600,
+        "gas_detected": false,
+        "smoke_detected": false,
+        "thermostat_setting": 22.0
+      }
+    },
+    {
+      "scene_id": 4,
+      "smartwatch": {
+        "heart_rate": [
+          60,
+          65,
+          70
+        ],
+        "steps": 200,
+        "sleep_duration": 540,
+        "active_minutes": 0
+      },
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 10,
+        "speed": 0
+      },
+      "smartphone": {
+        "screen_time_minutes": 30,
+        "notifications_count": 5,
+        "battery_level": 80,
+        "app_usage": {
+          "communication": 2,
+          "health": 1
+        }
+      },
+      "smartring": {
+        "body_temperature": 36.5,
+        "heart_rate_variability": 80,
+        "skin_temperature": 32,
+        "sleep_score": 90,
+        "spo2": 98
+      },
+      "smart_home": {
+        "doors_status": {
+          "front_door": "closed",
+          "back_door": "closed",
+          "garage": "closed"
+        },
+        "windows_status": {
+          "living_room": "closed",
+          "bedroom": "closed"
+        },
+        "indoor_temperature": 22,
+        "indoor_humidity": 50,
+        "light_status": {
+          "living_room": "on",
+          "bedroom": "off"
+        },
+        "motion_detected": {
+          "living_room": true,
+          "bedroom": false
+        },
+        "thermostat_setting": 22,
+        "alarm_status": "disarmed",
+        "co2_level": 600,
+        "gas_detected": false,
+        "smoke_detected": false,
+        "energy_consumption": 0.5
+      }
+    },
+    {
+      "scene_id": 5,
+      "smartwatch": {
+        "heart_rate": [
+          80,
+          82,
+          85
+        ],
+        "steps": 500,
+        "active_minutes": 15,
+        "calories_burned": 50
+      },
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 10,
+        "speed": 0.0
+      },
+      "smartphone": {
+        "screen_time_minutes": 30,
+        "app_usage": {
+          "communication": 2,
+          "productivity": 1
+        },
+        "notifications_count": 2,
+        "battery_level": 80
+      },
+      "smartring": {
+        "body_temperature": 36.8,
+        "heart_rate_variability": 70,
+        "skin_temperature": 32.5
+      },
+      "smart_home": {
+        "doors_status": {
+          "front_door": "locked",
+          "back_door": "locked",
+          "garage": "locked"
+        },
+        "windows_status": {
+          "living_room": "closed",
+          "bedroom": "closed"
+        },
+        "indoor_temperature": 22.0,
+        "indoor_humidity": 50,
+        "light_status": {
+          "living_room": "on",
+          "kitchen": "off"
+        },
+        "motion_detected": {
+          "living_room": true
+        },
+        "thermostat_setting": 22.0,
+        "alarm_status": "disarmed"
+      }
+    },
+    {
+      "scene_id": 6,
+      "smartwatch": {
+        "heart_rate": [
+          85,
+          88,
+          92,
+          110,
+          120
+        ],
+        "steps": 500,
+        "active_minutes": 30,
+        "calories_burned": 200
+      },
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 5,
+        "speed": 5.0
+      },
+      "smartphone": {
+        "screen_time_minutes": 10,
+        "notifications_count": 2,
+        "battery_level": 80,
+        "app_usage": {
+          "communication": 2,
+          "entertainment": 0,
+          "health": 0,
+          "productivity": 0,
+          "social": 0
+        }
+      },
+      "smartring": {
+        "body_temperature": 37.1,
+        "heart_rate_variability": 80,
+        "skin_temperature": 32.5,
+        "sleep_score": 0
+      },
+      "smart_home": {
+        "doors_status": {
+          "front_door": "locked",
+          "back_door": "locked",
+          "garage": "locked"
+        },
+        "windows_status": {
+          "living_room": "closed",
+          "bedroom": "closed",
+          "kitchen": "closed"
+        },
+        "indoor_temperature": 22.0,
+        "indoor_humidity": 50,
+        "light_status": {
+          "living_room": "off",
+          "bedroom": "off",
+          "kitchen": "off"
+        },
+        "motion_detected": false,
+        "alarm_status": "armed"
+      }
+    },
+    {
+      "scene_id": 7,
+      "smartwatch": {
+        "heart_rate": [
+          80,
+          82,
+          85
+        ],
+        "steps": 100,
+        "active_minutes": 10,
+        "calories_burned": 50
+      },
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 5,
+        "speed": 0
+      },
+      "smartphone": {
+        "screen_time_minutes": 20,
+        "notifications_count": 1,
+        "battery_level": 80,
+        "app_usage": {
+          "communication": 10,
+          "entertainment": 5
+        }
+      },
+      "smartring": {
+        "body_temperature": 36.8,
+        "heart_rate_variability": 70,
+        "skin_temperature": 32.5
+      },
+      "smart_home": {
+        "doors_status": {
+          "front_door": "locked",
+          "back_door": "locked"
+        },
+        "windows_status": {
+          "living_room": "closed",
+          "kitchen": "closed"
+        },
+        "indoor_temperature": 22.5,
+        "indoor_humidity": 50,
+        "light_status": {
+          "living_room": "on",
+          "kitchen": "on"
+        },
+        "motion_detected": {
+          "living_room": true,
+          "kitchen": true
+        },
+        "thermostat_setting": 22,
+        "alarm_status": "disarmed",
+        "co2_level": 600,
+        "gas_detected": false,
+        "smoke_detected": false
+      }
+    }
+  ],
+  "calendar_events": [
+    {
+      "scene_id": 1,
+      "events": [
+        {
+          "title": "Dinner with Luca and Alessandro",
+          "start_time": "19:00",
+          "end_time": "21:00",
+          "location": "Via Lecco",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "scene_id": 2,
+      "events": []
+    },
+    {
+      "scene_id": 3,
+      "events": [
+        {
+          "title": "Talk to Giovanni about noise",
+          "start_time": "14:30",
+          "end_time": "14:45",
+          "location": "My place/Neighbor's place",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "scene_id": 4,
+      "events": [
+        {
+          "title": "Gym Session",
+          "start_time": "11:00",
+          "end_time": "12:30",
+          "location": "Gym",
+          "description": ""
+        },
+        {
+          "title": "Lunch at New Restaurant",
+          "start_time": "13:00",
+          "end_time": "14:30",
+          "location": "New Restaurant",
+          "description": "Reservation for 2"
+        }
+      ]
+    },
+    {
+      "scene_id": 5,
+      "events": [
+        {
+          "title": "Call with Emma",
+          "start_time": "14:00",
+          "end_time": "15:00",
+          "location": "Online",
+          "description": "Project deadline discussion"
+        },
+        {
+          "title": "Review and finalize report",
+          "start_time": "15:00",
+          "end_time": "16:00",
+          "location": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "scene_id": 6,
+      "events": [
+        {
+          "title": "Gym Session with Riccardo",
+          "start_time": "14:00",
+          "end_time": "15:30",
+          "location": "Gym",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "scene_id": 7,
+      "events": [
+        {
+          "title": "Visit Mom",
+          "start_time": "14:00",
+          "end_time": "",
+          "location": "Mom's place",
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "scene_id": 1,
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "18:05",
+          "content": "Ciao ragazzi!"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Luca",
+          "timestamp": "18:07",
+          "content": "Ciao Marco! Come va?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "18:09",
+          "content": "Tutto bene, grazie. E voi?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Luca",
+          "timestamp": "18:11",
+          "content": "Si si, stasera beviamo qualcosa."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "18:13",
+          "content": "Dove andiamo a mangiare?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Luca",
+          "timestamp": "18:15",
+          "content": "Al solito posto, via Lecco."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "18:17",
+          "content": "Perfetto, io ho fame!"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Alessandro",
+          "timestamp": "18:19",
+          "content": "Arrivo tra 10 minuti"
+        }
+      ]
+    },
+    {
+      "scene_id": 2,
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "07:32",
+          "content": "Out for my run! 5k today"
+        },
+        {
+          "platform": "SMS",
+          "direction": "received",
+          "contact": "Sara",
+          "timestamp": "07:35",
+          "content": "Buona corsa! Io sto preparando la colazione"
+        },
+        {
+          "platform": "Telegram",
+          "direction": "sent",
+          "contact": "Marco's running group",
+          "timestamp": "07:40",
+          "content": "7:40, 3km done! How's everyone doing?"
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Work channel",
+          "timestamp": "07:45",
+          "content": "Morning team! Just a heads up, meeting at 10 AM today"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Alex",
+          "timestamp": "07:52",
+          "content": "Almost done! Last km pushing hard"
+        }
+      ]
+    },
+    {
+      "scene_id": 3,
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Giovanni",
+          "timestamp": "13:45",
+          "content": "Ciao Giovanni scusa but could you keep it down a bit?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Giovanni",
+          "timestamp": "13:47",
+          "content": "Sorry Marco I'll turn it down."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Giovanni",
+          "timestamp": "13:48",
+          "content": "Grazie mille appreciate it."
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Team Lead",
+          "timestamp": "13:50",
+          "content": "Hey Marco, need an update on the project by EOD"
+        },
+        {
+          "platform": "Email",
+          "direction": "received",
+          "contact": "Client",
+          "timestamp": "13:52",
+          "content": "Hi Marco, looking forward to your report. Best, Client"
+        }
+      ]
+    },
+    {
+      "scene_id": 4,
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Sofia",
+          "timestamp": "10:05",
+          "content": "Ciao amore, vuoi un caffè?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Sofia",
+          "timestamp": "10:07",
+          "content": "Mmm sì per favore"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Sofia",
+          "timestamp": "10:10",
+          "content": "Si, io pensavo di fare una sessione di pesi"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Sofia",
+          "timestamp": "10:12",
+          "content": "Okay, io ti accompagno"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Sofia",
+          "timestamp": "10:15",
+          "content": "Sì, ho sentito parlare bene di quel ristorante"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Sofia",
+          "timestamp": "10:17",
+          "content": "Sì, meglio di sì"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "10:20",
+          "content": "Hey, dopo vengo in palestra. Tu?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Luca",
+          "timestamp": "10:22",
+          "content": "Sto a casa, aspetto Fabio. Ci vediamo stasera?"
+        }
+      ]
+    },
+    {
+      "scene_id": 5,
+      "messages": [
+        {
+          "platform": "Slack",
+          "direction": "sent",
+          "contact": "Emma",
+          "timestamp": "14:05",
+          "content": "Okay so we need to finalize the report by tomorrow."
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Emma",
+          "timestamp": "14:07",
+          "content": "Yes I agree we should focus on the marketing strategy."
+        },
+        {
+          "platform": "Slack",
+          "direction": "sent",
+          "contact": "Emma",
+          "timestamp": "14:09",
+          "content": "Can you send me the latest draft?"
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Emma",
+          "timestamp": "14:11",
+          "content": "I'll review it and get back to you."
+        },
+        {
+          "platform": "Slack",
+          "direction": "sent",
+          "contact": "Emma",
+          "timestamp": "14:13",
+          "content": "Sounds good thanks Emma."
+        },
+        {
+          "platform": "Slack",
+          "direction": "sent",
+          "contact": "Emma",
+          "timestamp": "14:15",
+          "content": "I'm wrapping up this call now I'll get back to work."
+        }
+      ]
+    },
+    {
+      "scene_id": 6,
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Riccardo",
+          "timestamp": "13:45",
+          "content": "Hey man how's it going?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Riccardo",
+          "timestamp": "13:47",
+          "content": "Tutto bene, grazie. E tu? Preparato per la palestra?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Riccardo",
+          "timestamp": "13:49",
+          "content": "Si si, devo farmi una bella fatica oggi."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Riccardo",
+          "timestamp": "13:51",
+          "content": "Ahah, anch'io. Spero di non crepare sulla cyclette."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Riccardo",
+          "timestamp": "13:53",
+          "content": "Dai non morirai, solo 30 minuti di cardio."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Riccardo",
+          "timestamp": "13:55",
+          "content": "Sì, sì, facile a dirsi."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Riccardo",
+          "timestamp": "14:00",
+          "content": "Okay I'm putting on my headphones. I'm gonna start with some weights."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Riccardo",
+          "timestamp": "14:05",
+          "content": "How's your week been so far?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Riccardo",
+          "timestamp": "14:07",
+          "content": "È stata una settimana piena, ma ci sono riuscito."
+        }
+      ]
+    },
+    {
+      "scene_id": 7,
+      "messages": [
+        {
+          "platform": "Phone Call",
+          "direction": "received",
+          "contact": "Mamma",
+          "timestamp": "18:00",
+          "content": "Ciao Marco! Come va?"
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "sent",
+          "contact": "Mamma",
+          "timestamp": "18:02",
+          "content": "Tutto bene, mamma. E tu?"
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "received",
+          "contact": "Mamma",
+          "timestamp": "18:04",
+          "content": "Bene bene. Volevo solo sapere se vieni a trovarmi domani."
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "sent",
+          "contact": "Mamma",
+          "timestamp": "18:06",
+          "content": "Sì, certo. Che ora pensi di essere libero?"
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "received",
+          "contact": "Mamma",
+          "timestamp": "18:08",
+          "content": "Verso le 2, va bene?"
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "sent",
+          "contact": "Mamma",
+          "timestamp": "18:10",
+          "content": "Perfetto, ti aspetto."
+        }
+      ]
+    }
+  ],
+  "deficiencies": [
+    {
+      "scene_id": 1,
+      "physical_activity": {
+        "status": "INSUFFICIENT",
+        "reason": "Low daily physical activity (500 steps, 10 active minutes)"
+      },
+      "sleep": {
+        "status": "UNKNOWN",
+        "reason": "No sleep data available"
+      },
+      "stress": {
+        "status": "OK",
+        "reason": "Normal heart rate (82 bpm) and HRV (70 ms)"
+      },
+      "workload": {
+        "status": "UNKNOWN",
+        "reason": "No work activity data available"
+      },
+      "social_interaction": {
+        "status": "OK",
+        "reason": "Active social communication (WhatsApp messages)"
+      },
+      "environment": {
+        "status": "OK",
+        "reason": "Comfortable indoor temperature (22°C)"
+      },
+      "emotional_tone": {
+        "status": "POSITIVE",
+        "reason": "Positive and enthusiastic tone in messages"
+      },
+      "digital_behavior": {
+        "status": "BALANCED",
+        "reason": "Moderate screen time (20 minutes) and app usage"
+      }
+    },
+    {
+      "scene_id": 2,
+      "physical_activity": {
+        "status": "OK",
+        "reason": "User completed a 5K run, indicating sufficient physical activity."
+      },
+      "sleep": {
+        "status": "UNKNOWN",
+        "reason": "No data provided for sleep duration or quality."
+      },
+      "stress": {
+        "status": "WARNING",
+        "reason": "Elevated body temperature and heart rate during exercise may indicate some level of stress."
+      },
+      "workload": {
+        "status": "UNKNOWN",
+        "reason": "No data provided for work hours, meetings, or breaks."
+      },
+      "social_interaction": {
+        "status": "OK",
+        "reason": "User sent and received multiple messages, indicating healthy social interaction."
+      },
+      "environment": {
+        "status": "OK",
+        "reason": "Temperature and light conditions seem comfortable for outdoor activity."
+      },
+      "emotional_tone": {
+        "status": "POSITIVE",
+        "reason": "User's messages indicate a positive and enthusiastic tone."
+      },
+      "digital_behavior": {
+        "status": "BALANCED",
+        "reason": "Screen time and app usage appear balanced given the context of the run."
+      }
+    },
+    {
+      "scene_id": 3,
+      "physical_activity": {
+        "status": "INSUFFICIENT",
+        "reason": "Low steps (250) and active minutes (15)"
+      },
+      "sleep": {
+        "status": "UNKNOWN",
+        "reason": "No sleep data available"
+      },
+      "stress": {
+        "status": "OK",
+        "reason": "Normal heart rate (75) and HRV (80)"
+      },
+      "workload": {
+        "status": "UNKNOWN",
+        "reason": "No workload data available"
+      },
+      "social_interaction": {
+        "status": "OK",
+        "reason": "Recent social interactions with Giovanni"
+      },
+      "environment": {
+        "status": "OK",
+        "reason": "Comfortable temperature (22.5°C) and light"
+      },
+      "emotional_tone": {
+        "status": "POSITIVE",
+        "reason": "Polite conversation with neighbor"
+      },
+      "digital_behavior": {
+        "status": "BALANCED",
+        "reason": "Low screen time (10 minutes)"
+      }
+    },
+    {
+      "scene_id": 4,
+      "physical_activity": {
+        "status": "INSUFFICIENT",
+        "reason": "Low steps count (200) and no active minutes"
+      },
+      "sleep": {
+        "status": "OK",
+        "reason": "Optimal sleep duration (540 minutes)"
+      },
+      "stress": {
+        "status": "OK",
+        "reason": "Normal heart rate (65 bpm) and HRV (80 ms)"
+      },
+      "workload": {
+        "status": "UNKNOWN",
+        "reason": "Insufficient data"
+      },
+      "social_interaction": {
+        "status": "OK",
+        "reason": "Healthy social activity on WhatsApp"
+      },
+      "environment": {
+        "status": "OK",
+        "reason": "Comfortable indoor temperature (22°C) and humidity (50%)"
+      },
+      "emotional_tone": {
+        "status": "POSITIVE",
+        "reason": "Positive and enthusiastic tone in messages"
+      },
+      "digital_behavior": {
+        "status": "BALANCED",
+        "reason": "Normal screen time (30 minutes) and app usage"
+      }
+    },
+    {
+      "scene_id": 5,
+      "physical_activity": {
+        "status": "INSUFFICIENT",
+        "reason": "Low step count (500) and active minutes (15)"
+      },
+      "sleep": {
+        "status": "UNKNOWN",
+        "reason": "No sleep data available"
+      },
+      "stress": {
+        "status": "WARNING",
+        "reason": "Elevated heart rate (82 bpm) and some variability in messages"
+      },
+      "workload": {
+        "status": "WARNING",
+        "reason": "Continuous work activity with limited breaks"
+      },
+      "social_interaction": {
+        "status": "OK",
+        "reason": "Healthy communication with colleague Emma"
+      },
+      "environment": {
+        "status": "OK",
+        "reason": "Comfortable indoor temperature (22°C) and sufficient light"
+      },
+      "emotional_tone": {
+        "status": "NEUTRAL",
+        "reason": "Objective tone in communication with Emma"
+      },
+      "digital_behavior": {
+        "status": "BALANCED",
+        "reason": "Moderate screen time (30 minutes) and app usage"
+      }
+    },
+    {
+      "scene_id": 6,
+      "physical_activity": {
+        "status": "INSUFFICIENT",
+        "reason": "Low step count (500) and active minutes (30) below recommended thresholds"
+      },
+      "sleep": {
+        "status": "INSUFFICIENT",
+        "reason": "No sleep data available, indicating potential insufficient sleep"
+      },
+      "stress": {
+        "status": "WARNING",
+        "reason": "Elevated heart rate (110 bpm) during intense activity, but HRV (80 ms) within healthy range"
+      },
+      "workload": {
+        "status": "UNKNOWN",
+        "reason": "Insufficient data on work hours, meetings, or breaks"
+      },
+      "social_interaction": {
+        "status": "OK",
+        "reason": "Recent social interactions with Riccardo via WhatsApp and in-person gym session"
+      },
+      "environment": {
+        "status": "OK",
+        "reason": "Temperature (22°C), humidity (50%), and light conditions appear comfortable"
+      },
+      "emotional_tone": {
+        "status": "POSITIVE",
+        "reason": "Conversations with Riccardo indicate a positive and enthusiastic tone"
+      },
+      "digital_behavior": {
+        "status": "BALANCED",
+        "reason": "Low screen time (10 minutes) and few notifications (2) during this period"
+      }
+    },
+    {
+      "scene_id": 7,
+      "physical_activity": {
+        "status": "INSUFFICIENT",
+        "reason": "Low step count (100) and active minutes (10)"
+      },
+      "sleep": {
+        "status": "UNKNOWN",
+        "reason": "No sleep data available"
+      },
+      "stress": {
+        "status": "OK",
+        "reason": "Normal heart rate variability (70ms) and body temperature (36.8°C)"
+      },
+      "workload": {
+        "status": "UNKNOWN",
+        "reason": "No workload data available"
+      },
+      "social_interaction": {
+        "status": "OK",
+        "reason": "Recent social call with mom"
+      },
+      "environment": {
+        "status": "OK",
+        "reason": "Comfortable indoor temperature (22.5°C) and sufficient light"
+      },
+      "emotional_tone": {
+        "status": "POSITIVE",
+        "reason": "Positive conversation with mom"
+      },
+      "digital_behavior": {
+        "status": "BALANCED",
+        "reason": "Short screen time (20 minutes) and few notifications (1)"
+      }
+    }
+  ],
+  "error": null
+}

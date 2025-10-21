@@ -1,0 +1,1060 @@
+{
+  "profile": "James is a 45-year-old warehouse supervisor working the evening shift (2 PM - 10 PM) at a distribution center. He's been in this role for 15 years and is on his feet most of the day, walking between storage areas and loading docks. James wakes up around 10 AM, has a late breakfast, and goes to the gym for 30 minutes before work. He's trying to lose weight and monitors his activity with a fitness tracker. After work, he unwinds by watching TV or playing video games until 1-2 AM, which disrupts his sleep schedule. James has limited social interaction during the week due to his shift, but bowls in a league on Sunday mornings and has dinner with his brother's family once a week. He struggles with maintaining a healthy diet, often eating fast food during his work break.",
+  "num_scenes": 7,
+  "scenes": [
+    {
+      "scene_id": 1,
+      "day": "Sunday",
+      "time": "morning",
+      "description": "Alright it's 9 AM, getting ready for bowling.\n\nGonna meet the guys at 10.\n\nHopefully I don't mess up today.\n\nOkay, let me check my phone.\n\nText from my brother, hey Jim, you free for dinner this week?\n\nYeah, what day were you thinking?\n\nWednesday works for me.\n\nAlright, cool, I'll talk to you later.\n\nTime to get my bowling shoes.",
+      "device_data": {
+        "scene_id": 1,
+        "smartwatch": {
+          "heart_rate": [
+            80,
+            82,
+            81
+          ],
+          "steps": 300,
+          "distance": 0.2,
+          "active_minutes": 15
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 5,
+          "speed": 0.5
+        },
+        "smartphone": {
+          "screen_time_minutes": 10,
+          "notifications_count": 2,
+          "battery_level": 92,
+          "app_usage": {
+            "communication": 2,
+            "entertainment": 0,
+            "productivity": 0,
+            "social": 0,
+            "health": 0
+          },
+          "unlock_count": 2
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 70,
+          "skin_temperature": 32.5
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "unlocked",
+            "back_door": "locked",
+            "garage": "closed"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22.5,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "on",
+            "bedroom": "off",
+            "kitchen": "on"
+          },
+          "motion_detected": {
+            "living_room": true,
+            "kitchen": false
+          },
+          "thermostat_setting": 22,
+          "alarm_status": "disarmed",
+          "co2_level": 600,
+          "gas_detected": false,
+          "smoke_detected": false
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Bowling with the Guys",
+          "start_time": "10:00",
+          "end_time": "12:00",
+          "location": "Bowling Alley",
+          "description": ""
+        },
+        {
+          "title": "Dinner with Brother",
+          "start_time": "18:00",
+          "end_time": "20:00",
+          "location": "TBD",
+          "description": "Wednesday"
+        }
+      ],
+      "messages": [
+        {
+          "platform": "SMS",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "09:05",
+          "content": "Hey Jim, you free for dinner this week?"
+        },
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "09:07",
+          "content": "Yeah, what day were you thinking?"
+        },
+        {
+          "platform": "SMS",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "09:10",
+          "content": "How about Wednesday?"
+        },
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "09:12",
+          "content": "Wednesday works for me. I'll talk to you later."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Bowling League Group",
+          "timestamp": "09:20",
+          "content": "Almost ready, see you guys at 10!"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Mike",
+          "timestamp": "09:22",
+          "content": "Don't forget to bring your A game today"
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 1,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low step count (300) and active minutes (15)"
+        },
+        "sleep": {
+          "status": "UNKNOWN",
+          "reason": "No sleep data available"
+        },
+        "stress": {
+          "status": "OK",
+          "reason": "Normal heart rate variability (70ms) and body temperature (36.8°C)"
+        },
+        "workload": {
+          "status": "UNKNOWN",
+          "reason": "No workload data available"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "Multiple social interactions via messages and planned events"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Comfortable indoor temperature (22.5°C) and humidity (50%)"
+        },
+        "emotional_tone": {
+          "status": "POSITIVE",
+          "reason": "Positive tone in messages and conversation"
+        },
+        "digital_behavior": {
+          "status": "BALANCED",
+          "reason": "Low screen time (10 minutes) and moderate app usage"
+        }
+      }
+    },
+    {
+      "scene_id": 2,
+      "day": "Wednesday",
+      "time": "evening",
+      "description": "I'm pulling into the parking lot, getting ready for my shift.\nMy brother's calling, let's see what he wants.\nHey bro what's up?\nNot much just getting ready for work, you?\nYeah I was thinking we could grab dinner this weekend.\nThat sounds great, what did you have in mind?\nI was thinking we could try that new BBQ place.\nMmm that sounds awesome, I'm in.\nI'll text you and we can finalize plans.\nAlright sounds good, gotta go my shift's starting.",
+      "device_data": {
+        "scene_id": 2,
+        "smartwatch": {
+          "heart_rate": [
+            80,
+            82,
+            85
+          ],
+          "steps": 500,
+          "active_minutes": 10,
+          "distance": 0.1,
+          "calories_burned": 20
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 10,
+          "altitude": 10,
+          "speed": 5.0
+        },
+        "smartphone": {
+          "screen_time_minutes": 15,
+          "notifications_count": 2,
+          "battery_level": 80,
+          "app_usage": {
+            "communication": 5,
+            "social": 2
+          },
+          "unlock_count": 2
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 70,
+          "skin_temperature": 32.5,
+          "sleep_score": null,
+          "spo2": 98
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "closed"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22.0,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "off",
+            "bedroom": "off",
+            "kitchen": "off"
+          },
+          "motion_detected": false,
+          "alarm_status": "armed",
+          "co2_level": 600,
+          "gas_detected": false,
+          "smoke_detected": false,
+          "thermostat_setting": 20.0,
+          "energy_consumption": 0.5
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Dinner with Brother",
+          "start_time": "Saturday",
+          "end_time": "Sunday",
+          "location": "New BBQ Place",
+          "description": "TBD time, BBQ dinner"
+        }
+      ],
+      "messages": [
+        {
+          "platform": "Phone Call",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "14:30",
+          "content": "Hey bro what's up?"
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "14:31",
+          "content": "Not much just getting ready for work, you?"
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "14:32",
+          "content": "Yeah I was thinking we could grab dinner this weekend."
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "14:33",
+          "content": "That sounds great, what did you have in mind?"
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "14:34",
+          "content": "I was thinking we could try that new BBQ place."
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "14:35",
+          "content": "Mmm that sounds awesome, I'm in."
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "14:36",
+          "content": "I'll text you and we can finalize plans."
+        },
+        {
+          "platform": "Phone Call",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "14:37",
+          "content": "Alright sounds good, gotta go my shift's starting."
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 2,
+        "error": "Error code: 400 - {'error': {'message': 'tool call validation failed: parameters for tool validate_sleep_duration did not match schema: errors: [`/sleep_minutes`: expected integer, but got null]', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '[\\n  {\\n    \"name\": \"validate_steps_count\",\\n    \"parameters\": {\\n      \"steps\": 500\\n    }\\n  },\\n  {\\n    \"name\": \"validate_active_minutes\",\\n    \"parameters\": {\\n      \"active_minutes\": 10\\n    }\\n  },\\n  {\\n    \"name\": \"validate_heart_rate\",\\n    \"parameters\": {\\n      \"context\": \"rest\",\\n      \"heart_rate\": 82\\n    }\\n  },\\n  {\\n    \"name\": \"validate_hrv\",\\n    \"parameters\": {\\n      \"hrv\": 70\\n    }\\n  },\\n  {\\n    \"name\": \"validate_body_temperature\",\\n    \"parameters\": {\\n      \"temperature\": 36.8\\n    }\\n  },\\n  {\\n    \"name\": \"validate_sleep_duration\",\\n    \"parameters\": {\\n      \"sleep_minutes\": null\\n    }\\n  }\\n]'}}"
+      }
+    },
+    {
+      "scene_id": 3,
+      "day": "Friday",
+      "time": "evening",
+      "description": "I'm grabbing a bite to eat during my break.\nUsually get a burger and fries from that place down the street.\nHey Joe what's up man?\nNot much James just the usual.\nYou know trying to get through the day.\nI'm with you on that.\nSo what brings you here today?\nJust needed a break from the warehouse.\nWe got a big shipment coming in tomorrow.\nOh man that's gonna be a headache.\nYeah I know I'm not looking forward to it.\nWell good luck with that.\nThanks man you too.",
+      "device_data": {
+        "scene_id": 3,
+        "smartwatch": {
+          "heart_rate": [
+            80,
+            82,
+            85
+          ],
+          "steps": 500,
+          "active_minutes": 10,
+          "calories_burned": 50
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 10,
+          "speed": 5.0
+        },
+        "smartphone": {
+          "screen_time_minutes": 15,
+          "notifications_count": 2,
+          "battery_level": 80,
+          "app_usage": {
+            "communication": 5,
+            "entertainment": 5
+          }
+        },
+        "smartring": {
+          "body_temperature": 37.0,
+          "heart_rate_variability": 70,
+          "skin_temperature": 32.0
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22.0,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "off",
+            "bedroom": "off",
+            "kitchen": "off"
+          },
+          "motion_detected": false,
+          "alarm_status": "armed",
+          "co2_level": 600,
+          "energy_consumption": 0.5
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Shipment Processing - Tomorrow",
+          "start_time": "08:00",
+          "end_time": "",
+          "location": "Warehouse",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "Joe",
+          "timestamp": "14:30",
+          "content": "Hey Joe what's up man?"
+        },
+        {
+          "platform": "SMS",
+          "direction": "received",
+          "contact": "Joe",
+          "timestamp": "14:32",
+          "content": "Not much James just the usual. You know trying to get through the day."
+        },
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "Joe",
+          "timestamp": "14:34",
+          "content": "I'm with you on that. So what brings you here today?"
+        },
+        {
+          "platform": "SMS",
+          "direction": "received",
+          "contact": "Joe",
+          "timestamp": "14:36",
+          "content": "Just needed a break from the warehouse. We got a big shipment coming in tomorrow."
+        },
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "Joe",
+          "timestamp": "14:38",
+          "content": "Oh man that's gonna be a headache. Yeah I know I'm not looking forward to it."
+        },
+        {
+          "platform": "SMS",
+          "direction": "received",
+          "contact": "Joe",
+          "timestamp": "14:40",
+          "content": "Well good luck with that. Thanks man you too."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Samantha",
+          "timestamp": "14:45",
+          "content": "Hey I'm grabbing a burger for lunch. You want one?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Samantha",
+          "timestamp": "14:47",
+          "content": "No I'm good, just had a salad. Enjoy your break!"
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 3,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low step count (500) and active minutes (10)"
+        },
+        "sleep": {
+          "status": "UNKNOWN",
+          "reason": "No sleep data available"
+        },
+        "stress": {
+          "status": "WARNING",
+          "reason": "Elevated heart rate (82 bpm) and conversation tone"
+        },
+        "workload": {
+          "status": "WARNING",
+          "reason": "Upcoming shipment processing and conversation tone"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "Multiple conversations and messages sent/received"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Comfortable indoor temperature (22°C) and humidity (50%)"
+        },
+        "emotional_tone": {
+          "status": "NEUTRAL",
+          "reason": "Conversation tone seems neutral or slightly negative"
+        },
+        "digital_behavior": {
+          "status": "BALANCED",
+          "reason": "Low screen time (15 minutes) and few notifications (2)"
+        }
+      }
+    },
+    {
+      "scene_id": 4,
+      "day": "Tuesday",
+      "time": "evening",
+      "description": "I'm heading home from work, pretty exhausted.\n\n                  Just got a text from my brother, asking if I want to come over for dinner tonight.\n\n                  Hey bro, what's up?\n\n                  Not much, I was thinking we could have a BBQ tonight, you in?\n\n                  Sounds great, I could use a home-cooked meal.\n\n                  Awesome, I'll bring some drinks.\n\n                  See you in 30 minutes.",
+      "device_data": {
+        "scene_id": 4,
+        "smartwatch": {
+          "heart_rate": [
+            85,
+            90,
+            88
+          ],
+          "steps": 500,
+          "distance": 0.2,
+          "active_minutes": 30
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 10,
+          "speed": 5.0
+        },
+        "smartphone": {
+          "notifications_count": 2,
+          "battery_level": 70,
+          "app_usage": {
+            "communication": 2,
+            "entertainment": 10
+          },
+          "screen_time_minutes": 20
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 80,
+          "skin_temperature": 32.5
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed"
+          },
+          "indoor_temperature": 22.0,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "off",
+            "kitchen": "off"
+          },
+          "thermostat_setting": 20.0,
+          "alarm_status": "armed",
+          "motion_detected": false,
+          "co2_level": 600
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Dinner at Brother's",
+          "start_time": "18:30",
+          "end_time": "20:00",
+          "location": "Brother's place",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "SMS",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "18:05",
+          "content": "Hey bro, what's up?"
+        },
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "18:07",
+          "content": "Not much, I was thinking we could have a BBQ tonight, you in?"
+        },
+        {
+          "platform": "SMS",
+          "direction": "received",
+          "contact": "James",
+          "timestamp": "18:10",
+          "content": "Sounds great, I could use a home-cooked meal."
+        },
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "James",
+          "timestamp": "18:12",
+          "content": "Awesome, I'll bring some drinks."
+        },
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "James",
+          "timestamp": "18:15",
+          "content": "See you in 30 minutes."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Wife",
+          "timestamp": "18:20",
+          "content": "Hey, just got a text from my brother. I'm heading over for dinner. Be back late."
+        },
+        {
+          "platform": "Slack",
+          "direction": "sent",
+          "contact": "Supervisor",
+          "timestamp": "17:55",
+          "content": "Just a heads up, I'm clocking out early tonight. Finished my tasks for the day."
+        },
+        {
+          "platform": "Email",
+          "direction": "received",
+          "contact": "Distribution Center",
+          "timestamp": "17:30",
+          "content": "Your shift ends at 10 PM. Please ensure all tasks are completed before leaving."
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 4,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low step count (500) and active minutes (30)"
+        },
+        "sleep": {
+          "status": "OK",
+          "reason": "No sleep data available, but assuming adequate sleep based on user's energy levels"
+        },
+        "stress": {
+          "status": "WARNING",
+          "reason": "Elevated heart rate (88 bpm) and low HRV (80 ms)"
+        },
+        "workload": {
+          "status": "OK",
+          "reason": "No excessive work hours or meeting density detected"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "Healthy social interaction with brother and wife"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Comfortable indoor temperature (22°C) and humidity (50%)"
+        },
+        "emotional_tone": {
+          "status": "NEUTRAL",
+          "reason": "Conversations with brother and wife seem neutral and casual"
+        },
+        "digital_behavior": {
+          "status": "BALANCED",
+          "reason": "Moderate screen time (20 minutes) and app usage"
+        }
+      }
+    },
+    {
+      "scene_id": 5,
+      "day": "Saturday",
+      "time": "morning",
+      "description": "Alright it's 11 AM, waking up pretty late today.\n\nI'm gonna make some pancakes, been craving them all week.\n\nLet me check my fitness tracker, see how I did yesterday.\n\nOkay, 10,000 steps, not bad.\n\nI should probably plan something for today, maybe a movie or something.\n\nMy brother's texting me, let's see what he wants.\n\nHey bro what's up?\n\nNot much, wanna come over and watch the game this afternoon?\n\nYeah sure, what time?\n\nHow about 2 o'clock?\n\nSounds good to me, I'll be there.",
+      "device_data": {
+        "scene_id": 5,
+        "smartwatch": {
+          "heart_rate": [
+            60,
+            65,
+            70
+          ],
+          "steps": 10000,
+          "sleep_duration": 420,
+          "active_minutes": 30,
+          "calories_burned": 2000
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 10,
+          "altitude": 10,
+          "speed": 0
+        },
+        "smartphone": {
+          "screen_time_minutes": 120,
+          "notifications_count": 5,
+          "battery_level": 80,
+          "app_usage": {
+            "social": 10,
+            "productivity": 5,
+            "entertainment": 20,
+            "health": 10,
+            "communication": 15
+          },
+          "unlock_count": 5
+        },
+        "smartring": {
+          "body_temperature": 36.5,
+          "heart_rate_variability": 80,
+          "skin_temperature": 32,
+          "sleep_score": 80,
+          "spo2": 98
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "unlocked",
+            "back_door": "locked",
+            "garage": "closed"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "on",
+            "bedroom": "off",
+            "kitchen": "on"
+          },
+          "motion_detected": {
+            "living_room": true,
+            "kitchen": true
+          },
+          "thermostat_setting": 22,
+          "alarm_status": "disarmed",
+          "co2_level": 600,
+          "gas_detected": false,
+          "smoke_detected": false
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Watch Game with Brother",
+          "start_time": "14:00",
+          "end_time": "17:00",
+          "location": "Brother's Place",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "11:05",
+          "content": "Hey bro what's up?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "11:07",
+          "content": "Not much, wanna come over and watch the game this afternoon?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "11:09",
+          "content": "Yeah sure, what time?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "11:10",
+          "content": "How about 2 o'clock?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "11:11",
+          "content": "Sounds good to me, I'll be there."
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 5,
+        "error": "Error code: 400 - {'error': {'message': 'tool call validation failed: parameters for tool validate_steps_count did not match schema: errors: [`/steps`: expected integer, but got string]', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '[\\n  {\\n    \"name\": \"validate_steps_count\",\\n    \"parameters\": {\\n      \"steps\": \"10000\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_sleep_duration\",\\n    \"parameters\": {\\n      \"sleep_minutes\": \"420\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_active_minutes\",\\n    \"parameters\": {\\n      \"active_minutes\": \"30\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_heart_rate\",\\n    \"parameters\": {\\n      \"context\": \"rest\",\\n      \"heart_rate\": \"65\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_hrv\",\\n    \"parameters\": {\\n      \"hrv\": \"80\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_body_temperature\",\\n    \"parameters\": {\\n      \"temperature\": \"36.5\"\\n    }\\n  }\\n]'}}"
+      }
+    },
+    {
+      "scene_id": 6,
+      "day": "Thursday",
+      "time": "evening",
+      "description": "I'm unwinding after a long day at work.\nGonna play some video games for a bit.\nHey Sarah, what's up?\nNot much just watching a movie, you?\nJust started playing this new game, it's pretty fun.\nI should come over and check it out.\nYeah, you're welcome over anytime.\nI might take you up on that, been stuck in a rut lately.\nDefinitely need a break from work.",
+      "device_data": {
+        "scene_id": 6,
+        "smartwatch": {
+          "heart_rate": [
+            60,
+            65,
+            70
+          ],
+          "steps": 100,
+          "active_minutes": 5,
+          "calories_burned": 20
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 10,
+          "speed": 0
+        },
+        "smartphone": {
+          "screen_time_minutes": 120,
+          "notifications_count": 5,
+          "battery_level": 80,
+          "app_usage": {
+            "entertainment": 60,
+            "communication": 30
+          }
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 80,
+          "skin_temperature": 32.5
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed"
+          },
+          "indoor_temperature": 22.5,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "on",
+            "bedroom": "off"
+          },
+          "motion_detected": {
+            "living_room": true,
+            "bedroom": false
+          },
+          "thermostat_setting": 22,
+          "alarm_status": "disarmed",
+          "co2_level": 800,
+          "gas_detected": false,
+          "smoke_detected": false
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Game Night with Sarah",
+          "start_time": "19:00",
+          "end_time": "22:00",
+          "location": "My Place",
+          "description": ""
+        },
+        {
+          "title": "Movie Night at Sarah's",
+          "start_time": "20:00",
+          "end_time": "23:00",
+          "location": "Sarah's Place",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Sarah",
+          "timestamp": "20:45",
+          "content": "Hey Sarah, what's up?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Sarah",
+          "timestamp": "20:47",
+          "content": "Not much just watching a movie, you?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Sarah",
+          "timestamp": "20:49",
+          "content": "Just started playing this new game, it's pretty fun."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Sarah",
+          "timestamp": "20:51",
+          "content": "I should come over and check it out."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Sarah",
+          "timestamp": "20:53",
+          "content": "Yeah, you're welcome over anytime."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Sarah",
+          "timestamp": "20:55",
+          "content": "I might take you up on that, been stuck in a rut lately."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Sarah",
+          "timestamp": "20:57",
+          "content": "Definitely need a break from work."
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Distribution Center Team",
+          "timestamp": "21:05",
+          "content": "Evening shift update: Tomorrow's shipment delayed by 2 hours."
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 6,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low steps (100) and active minutes (5) indicating sedentary behavior"
+        },
+        "sleep": {
+          "status": "UNKNOWN",
+          "reason": "No sleep data available"
+        },
+        "stress": {
+          "status": "OK",
+          "reason": "Heart rate (65) and HRV (80) within normal ranges"
+        },
+        "workload": {
+          "status": "UNKNOWN",
+          "reason": "No workload data available"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "Healthy social interaction via messages with Sarah"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Comfortable indoor temperature (22.5°C) and humidity (50%)"
+        },
+        "emotional_tone": {
+          "status": "NEUTRAL",
+          "reason": "Conversation tone with Sarah appears neutral"
+        },
+        "digital_behavior": {
+          "status": "OVERCONNECTED",
+          "reason": "High screen time (120 minutes) for entertainment"
+        }
+      }
+    },
+    {
+      "scene_id": 7,
+      "day": "Monday",
+      "time": "morning",
+      "description": "Okay it's 10:30 AM, time to get moving.\nI'm gonna head to the gym, get in a quick workout before work.\nHopefully I can get my energy up for this evening shift.\nLet me check my fitness tracker, see how I'm doing.\nOkay I've got 10,000 steps from yesterday, not bad.\nNow let's get ready to go.\nI'm heading out the door, see you later gym.\nHey I'm on my way, what's the plan for today?\nJust the usual, get in a good workout, then head to work.\nSounds good to me, try to stay awake tonight.\nWill do, try to get some rest soon.",
+      "device_data": {
+        "scene_id": 7,
+        "smartwatch": {
+          "heart_rate": [
+            85,
+            90,
+            88
+          ],
+          "steps": 10000,
+          "active_minutes": 60,
+          "distance": 4.2,
+          "calories_burned": 150
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 10,
+          "altitude": 20,
+          "speed": 5.0
+        },
+        "smartphone": {
+          "screen_time_minutes": 30,
+          "notifications_count": 5,
+          "battery_level": 80,
+          "app_usage": {
+            "social": 5,
+            "productivity": 5,
+            "entertainment": 5,
+            "health": 10,
+            "communication": 10
+          },
+          "unlock_count": 3
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 70,
+          "skin_temperature": 32.5,
+          "sleep_score": 0,
+          "spo2": 98
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22.0,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "off",
+            "bedroom": "off",
+            "kitchen": "off"
+          },
+          "motion_detected": false,
+          "alarm_status": "armed",
+          "co2_level": 600,
+          "gas_detected": false,
+          "smoke_detected": false,
+          "thermostat_setting": 20.0,
+          "energy_consumption": 0.5
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Gym Session",
+          "start_time": "10:30",
+          "end_time": "11:30",
+          "location": "Gym",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Brother",
+          "timestamp": "10:32",
+          "content": "Hey, just heading to the gym. Got my evening shift tonight"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Brother",
+          "timestamp": "10:35",
+          "content": "Sounds good. Try to stay awake tonight"
+        },
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "Gym buddy",
+          "timestamp": "10:40",
+          "content": "On my way to the gym. See you soon"
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Distribution Center Team",
+          "timestamp": "11:05",
+          "content": "Reminder: Evening shift starts at 2 PM. Review inventory reports before then"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Gym buddy",
+          "timestamp": "11:10",
+          "content": "Just finished my workout. Feeling a bit more awake now"
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 7,
+        "error": "Error code: 400 - {'error': {'message': 'tool call validation failed: parameters for tool validate_steps_count did not match schema: errors: [`/steps`: expected integer, but got string]', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '[\\n  {\\n    \"name\": \"validate_steps_count\",\\n    \"parameters\": {\\n      \"steps\": \"10000\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_active_minutes\",\\n    \"parameters\": {\\n      \"active_minutes\": \"60\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_heart_rate\",\\n    \"parameters\": {\\n      \"heart_rate\": \"85\",\\n      \"context\": \"rest\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_hrv\",\\n    \"parameters\": {\\n      \"hrv\": \"70\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_body_temperature\",\\n    \"parameters\": {\\n      \"temperature\": \"36.8\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_sleep_duration\",\\n    \"parameters\": {\\n      \"sleep_minutes\": \"0\"\\n    }\\n  }\\n]'}}"
+      }
+    }
+  ]
+}

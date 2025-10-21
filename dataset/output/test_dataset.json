@@ -1,0 +1,347 @@
+{
+  "profile": "\n    Marco is a 32-year-old software engineer living in Milan, Italy.\n    He works remotely from home most days, typically starting work at 9 AM\n    and finishing around 6 PM. He enjoys running in the mornings 3 times a week\n    and goes to the gym on weekends. Marco is generally health-conscious but\n    sometimes skips breakfast when he has early meetings. He's sociable,\n    often meeting friends for dinner or drinks on Friday evenings.\n    He struggles with maintaining a consistent sleep schedule, especially\n    when working on tight deadlines.\n    ",
+  "num_scenes": 2,
+  "current_scene_index": 2,
+  "scenes": [
+    {
+      "scene_id": 1,
+      "day": "Tuesday",
+      "time": "morning",
+      "description": "Okay it's 7:30 AM I should probably get up.\nI'm feeling a bit tired today.\nHopefully a run will help wake me up.\nI'm only doing 30 minutes today since I have an early meeting.\nLet me quickly get my gear and get going.\nTime to make a quick coffee before I leave.\nI'll just grab my phone and head out."
+    },
+    {
+      "scene_id": 2,
+      "day": "Friday",
+      "time": "evening",
+      "description": "I'm heading out to meet Luca and Alessandro for dinner.\n\nCiao ragazzi!\nEhi Marco! Come va?\nBene bene e voi?\nSi si tutto bene.\nAllora cosa mangiamo stasera?\nNon lo so ho sentito che c'è un nuovo ristorante qui vicino.\nSì sì ho prenotato già.\nFantastico!\nSpero che abbiano del buon vino.\nIo inizio con un aperitivo.\nChe ne dite di un Negroni?\nSì sì perfetto!"
+    }
+  ],
+  "device_data": [
+    {
+      "scene_id": 1,
+      "smartwatch": {
+        "heart_rate": [
+          60,
+          65,
+          70
+        ],
+        "steps": 0,
+        "sleep_duration": 480,
+        "active_minutes": 0
+      },
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 5,
+        "speed": 0,
+        "altitude": 10
+      },
+      "smartphone": {
+        "screen_time_minutes": 15,
+        "notifications_count": 5,
+        "battery_level": 90,
+        "unlock_count": 2,
+        "app_usage": {
+          "communication": 2,
+          "productivity": 0,
+          "entertainment": 0,
+          "health": 0,
+          "social": 0
+        }
+      },
+      "smartring": {
+        "body_temperature": 36.5,
+        "heart_rate_variability": 80,
+        "skin_temperature": 32,
+        "sleep_score": 70,
+        "spo2": 98
+      },
+      "smart_home": {
+        "doors_status": {
+          "front_door": "locked",
+          "back_door": "locked",
+          "garage": "locked"
+        },
+        "windows_status": {
+          "living_room": "closed",
+          "bedroom": "closed",
+          "kitchen": "closed"
+        },
+        "indoor_temperature": 20,
+        "indoor_humidity": 50,
+        "light_status": {
+          "living_room": "off",
+          "bedroom": "off",
+          "kitchen": "off"
+        },
+        "motion_detected": false,
+        "alarm_status": "armed",
+        "co2_level": 600,
+        "energy_consumption": 0.5,
+        "gas_detected": false,
+        "smoke_detected": false,
+        "thermostat_setting": 20
+      }
+    },
+    {
+      "scene_id": 2,
+      "smartwatch": {
+        "heart_rate": [
+          80,
+          82,
+          85
+        ],
+        "steps": 500,
+        "distance": 0.2,
+        "active_minutes": 15
+      },
+      "gps": {
+        "latitude": 45.764043,
+        "longitude": 4.835659,
+        "accuracy": 5,
+        "speed": 5.0
+      },
+      "smartphone": {
+        "screen_time_minutes": 10,
+        "notifications_count": 2,
+        "battery_level": 92,
+        "app_usage": {
+          "communication": 2,
+          "entertainment": 0,
+          "health": 0,
+          "productivity": 0,
+          "social": 1
+        }
+      },
+      "smartring": {
+        "body_temperature": 36.8,
+        "heart_rate_variability": 70,
+        "skin_temperature": 32.1
+      },
+      "smart_home": {
+        "doors_status": {
+          "front_door": "locked",
+          "back_door": "locked",
+          "garage": "locked"
+        },
+        "windows_status": {
+          "living_room": "closed",
+          "bedroom": "closed",
+          "kitchen": "closed"
+        },
+        "indoor_temperature": 20.0,
+        "indoor_humidity": 50,
+        "light_status": {
+          "living_room": "off",
+          "bedroom": "off",
+          "kitchen": "off"
+        },
+        "motion_detected": false,
+        "alarm_status": "armed",
+        "gas_detected": false,
+        "smoke_detected": false,
+        "thermostat_setting": 18.0
+      }
+    }
+  ],
+  "calendar_events": [
+    {
+      "scene_id": 1,
+      "events": [
+        {
+          "title": "Early Meeting",
+          "start_time": "08:00",
+          "end_time": "09:00",
+          "location": "Office",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "scene_id": 2,
+      "events": [
+        {
+          "title": "Dinner with Luca and Alessandro",
+          "start_time": "19:00",
+          "end_time": "21:00",
+          "location": "New Restaurant (nearby)",
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "scene_id": 1,
+      "messages": [
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "Luisa",
+          "timestamp": "07:32",
+          "content": "Ci vediamo stasera? Sono un po' stanco oggi"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Alessandro",
+          "timestamp": "07:35",
+          "content": "Buongiorno! Tutto bene? Non correre troppo oggi"
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "IT Support",
+          "timestamp": "07:40",
+          "content": "Reminder: System maintenance today at 8:30 AM. Please save your work"
+        },
+        {
+          "platform": "Email",
+          "direction": "received",
+          "contact": "No Reply",
+          "timestamp": "07:45",
+          "content": "Daily Scrum: Team meeting at 9:00 AM. Agenda: project updates"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luisa",
+          "timestamp": "07:50",
+          "content": "Sì, sto bene. Solo un po' stanco. Ci vediamo stasera"
+        }
+      ]
+    },
+    {
+      "scene_id": 2,
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "18:30",
+          "content": "Ciao ragazzi!"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Luca",
+          "timestamp": "18:31",
+          "content": "Ehi Marco! Come va?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "18:32",
+          "content": "Bene bene e voi?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Luca",
+          "timestamp": "18:33",
+          "content": "Si si tutto bene."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "18:34",
+          "content": "Allora cosa mangiamo stasera?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Alessandro",
+          "timestamp": "18:35",
+          "content": "Non lo so ho sentito che c'è un nuovo ristorante qui vicino."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Alessandro",
+          "timestamp": "18:36",
+          "content": "Sì sì ho prenotato già."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Luca",
+          "timestamp": "18:37",
+          "content": "Fantastico!"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Luca",
+          "timestamp": "18:38",
+          "content": "Spero che abbiano del buon vino. Io inizio con un aperitivo. Che ne dite di un Negroni?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Alessandro",
+          "timestamp": "18:40",
+          "content": "Sì sì perfetto!"
+        }
+      ]
+    }
+  ],
+  "deficiencies": [
+    {
+      "scene_id": 1,
+      "physical_activity": {
+        "status": "INSUFFICIENT",
+        "reason": "Insufficient physical activity, 0 active minutes and 0 steps"
+      },
+      "sleep": {
+        "status": "OK",
+        "reason": "Adequate sleep duration of 8 hours"
+      },
+      "nutrition": {
+        "status": "UNKNOWN",
+        "reason": "Insufficient data to assess nutrition"
+      },
+      "stress": {
+        "status": "OK",
+        "reason": "Normal stress indicators, HRV 80ms and resting HR 65bpm"
+      },
+      "hydration": {
+        "status": "UNKNOWN",
+        "reason": "No hydration data available"
+      },
+      "social_interaction": {
+        "status": "OK",
+        "reason": "Healthy social interaction patterns, multiple messages sent and received"
+      }
+    },
+    {
+      "scene_id": 2,
+      "physical_activity": {
+        "status": "INSUFFICIENT",
+        "reason": "Low step count (500) and active minutes (15) indicate insufficient physical activity"
+      },
+      "sleep": {
+        "status": "INSUFFICIENT",
+        "reason": "No sleep data available, but typically a night of sleep is expected"
+      },
+      "nutrition": {
+        "status": "UNKNOWN",
+        "reason": "No nutrition data available"
+      },
+      "stress": {
+        "status": "WARNING",
+        "reason": "Elevated heart rate (82 bpm) during social interaction"
+      },
+      "hydration": {
+        "status": "UNKNOWN",
+        "reason": "No hydration data available"
+      },
+      "social_interaction": {
+        "status": "OK",
+        "reason": "Multiple social interactions via messaging and in-person dinner plans"
+      }
+    }
+  ],
+  "error": null
+}

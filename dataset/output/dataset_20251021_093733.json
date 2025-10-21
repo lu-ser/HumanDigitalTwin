@@ -1,0 +1,1151 @@
+{
+  "profile": "Alex is a 28-year-old fitness influencer and personal trainer based in Los Angeles. They wake up at 5:30 AM every day for a morning workout, which they film for their social media channels. Alex teaches three fitness classes per week and has personal training sessions with clients throughout the day. They are very conscious about nutrition, tracking macros and meal prep on Sundays. Alex is highly active on Instagram and TikTok, posting daily content and engaging with followers. Despite their healthy lifestyle, they struggle with work-life balance and often experience stress from constantly being 'on' for social media. They have trouble unplugging in the evenings.",
+  "num_scenes": 7,
+  "scenes": [
+    {
+      "scene_id": 1,
+      "day": "Sunday",
+      "time": "afternoon",
+      "description": "I'm in the kitchen now, got my laptop open, planning out my meals for the week.\nI'm tracking my macros, trying to hit my protein goal for the day.\nOkay, let's see... chicken breast, salmon, and some tofu for good measure.\nI need to make a grocery list, can't forget to get more greens.\nHey, babe! What's up?\nJust meal prepping for the week, you know how it is.\nYeah, I'm trying to get it all done today so I can relax later.\nRelax? What's that? Just kidding, sort of.\nI know, I know, you've been telling me to take a break from social media.\nI will, I will, I just need to get through this week first.\nOkay, love you, bye.",
+      "device_data": {
+        "scene_id": 1,
+        "smartwatch": {
+          "heart_rate": [
+            72,
+            75,
+            70
+          ],
+          "steps": 250,
+          "active_minutes": 15,
+          "calories_burned": 50
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 5,
+          "speed": 0
+        },
+        "smartphone": {
+          "screen_time_minutes": 45,
+          "notifications_count": 5,
+          "battery_level": 80,
+          "app_usage": {
+            "productivity": 20,
+            "social": 10,
+            "health": 15
+          }
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 80,
+          "skin_temperature": 32.5
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22.5,
+          "indoor_humidity": 50,
+          "light_status": {
+            "kitchen": "on",
+            "living_room": "off"
+          },
+          "motion_detected": {
+            "kitchen": true,
+            "living_room": false
+          },
+          "thermostat_setting": 22,
+          "alarm_status": "disarmed",
+          "co2_level": 600,
+          "gas_detected": false,
+          "smoke_detected": false
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Grocery Shopping",
+          "start_time": "15:00",
+          "end_time": "16:30",
+          "location": "Local Market",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Babe",
+          "timestamp": "13:45",
+          "content": "Hey, babe! What's up?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Babe",
+          "timestamp": "13:47",
+          "content": "Just meal prepping for the week, you know how it is."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Babe",
+          "timestamp": "13:49",
+          "content": "Yeah, I'm trying to get it all done today so I can relax later."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Babe",
+          "timestamp": "13:51",
+          "content": "Relax? What's that? Just kidding, sort of."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Babe",
+          "timestamp": "13:53",
+          "content": "I know, I know, you've been telling me to take a break from social media."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Babe",
+          "timestamp": "13:55",
+          "content": "I will, I will, I just need to get through this week first."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Babe",
+          "timestamp": "13:57",
+          "content": "Okay, love you, bye."
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Fitness Studio",
+          "timestamp": "14:05",
+          "content": "Reminder: 3 clients scheduled for tomorrow. Please review their plans."
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 1,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low steps (250) and active minutes (15) today"
+        },
+        "sleep": {
+          "status": "UNKNOWN",
+          "reason": "No sleep data available"
+        },
+        "stress": {
+          "status": "OK",
+          "reason": "Heart rate (72) and HRV (80) within normal ranges"
+        },
+        "workload": {
+          "status": "UNKNOWN",
+          "reason": "No work hours or meeting data available"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "Had multiple chats with partner on WhatsApp"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Temperature (22.5°C), humidity (50%), and light levels (kitchen light on) comfortable"
+        },
+        "emotional_tone": {
+          "status": "NEUTRAL",
+          "reason": "Conversation with partner seemed casual and relaxed"
+        },
+        "digital_behavior": {
+          "status": "BALANCED",
+          "reason": "Screen time (45 minutes) and app usage (productivity, social, health) reasonable"
+        }
+      }
+    },
+    {
+      "scene_id": 2,
+      "day": "Tuesday",
+      "time": "evening",
+      "description": "I'm getting ready to film a workout for my Instagram story.\n\nOkay, let me just set up the camera and lighting real quick.\n\nI'm doing a HIIT session today, gonna be a lot of burpees and jump squats.\n\nHey, what's up guys? Welcome back to my channel.\n\nToday we're doing a quick 20-minute HIIT workout, let's get started!\n\nI'm so exhausted, I've been going nonstop since this morning.\n\nI had a client session at 9 AM, then taught a class at 12 PM.\n\nNow I'm just trying to get this content done before I have to respond to all these comments.\n\nUgh, I wish I could just take a break from social media for a day.\n\nBut I know I have to keep posting to stay relevant in the fitness space.\n\nOkay, 5 more minutes and I'll be done with this video.\n\nTime to go edit and schedule it for tomorrow morning.",
+      "device_data": {
+        "scene_id": 2,
+        "smartwatch": {
+          "heart_rate": [
+            120,
+            125,
+            130,
+            128,
+            122
+          ],
+          "steps": 500,
+          "active_minutes": 30,
+          "calories_burned": 200
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 5,
+          "speed": 0
+        },
+        "smartphone": {
+          "screen_time_minutes": 30,
+          "notifications_count": 10,
+          "battery_level": 80,
+          "app_usage": {
+            "social": 15,
+            "productivity": 5,
+            "entertainment": 5,
+            "health": 5
+          }
+        },
+        "smartring": {
+          "body_temperature": 37.5,
+          "heart_rate_variability": 80,
+          "skin_temperature": 32.5
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "on",
+            "kitchen": "off"
+          },
+          "motion_detected": {
+            "living_room": true,
+            "kitchen": false
+          },
+          "thermostat_setting": 22,
+          "alarm_status": "disarmed"
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Client Session",
+          "start_time": "09:00",
+          "end_time": "10:00",
+          "location": "Studio or Online",
+          "description": ""
+        },
+        {
+          "title": "Teach Fitness Class",
+          "start_time": "12:00",
+          "end_time": "13:00",
+          "location": "Gym or Online",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "Instagram",
+          "direction": "sent",
+          "contact": "Followers",
+          "timestamp": "18:05",
+          "content": "Hey, what's up guys? Welcome back to my channel. Today we're doing a quick 20-minute HIIT workout, let's get started!"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Samantha (friend)",
+          "timestamp": "18:10",
+          "content": "Hey! How's it going? You look exhausted in your stories"
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Fitness Studio",
+          "timestamp": "18:15",
+          "content": "Reminder: Class tonight at 7 PM. See you then!"
+        },
+        {
+          "platform": "Email",
+          "direction": "received",
+          "contact": "Fitness Brand",
+          "timestamp": "18:20",
+          "content": "Collaboration opportunity: Sponsored post for our new fitness gear. Let us know if interested."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Samantha (friend)",
+          "timestamp": "18:22",
+          "content": "I'm so exhausted, I've been going nonstop since this morning. Had a client session at 9 AM, then taught a class at 12 PM"
+        },
+        {
+          "platform": "Instagram",
+          "direction": "received",
+          "contact": "Follower",
+          "timestamp": "18:25",
+          "content": "Love your HIIT workouts! Can you do a video on nutrition tips?"
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 2,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low step count (500) and active minutes (30) indicate insufficient physical activity"
+        },
+        "sleep": {
+          "status": "UNKNOWN",
+          "reason": "No sleep data available"
+        },
+        "stress": {
+          "status": "WARNING",
+          "reason": "Elevated heart rate (125 bpm) and low HRV (80 ms) suggest some stress"
+        },
+        "workload": {
+          "status": "WARNING",
+          "reason": "Busy schedule with client session, class, and content creation indicates sustained focus with limited breaks"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "Healthy social activity with messages sent and received, and engagement with followers"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Comfortable indoor temperature (22°C) and humidity (50%)"
+        },
+        "emotional_tone": {
+          "status": "NEGATIVE",
+          "reason": "Expressions of exhaustion and frustration ('I'm so exhausted', 'Ugh, I wish I could just take a break')"
+        },
+        "digital_behavior": {
+          "status": "OVERCONNECTED",
+          "reason": "High screen time (30 minutes) and app usage for social media and content creation"
+        }
+      }
+    },
+    {
+      "scene_id": 3,
+      "day": "Thursday",
+      "time": "afternoon",
+      "description": "I'm grabbing a snack before my next client.\nI'm having an apple with almond butter.\nOkay, let me check my schedule.\nI've got a training session with Rachel in 20 minutes.\nShe's trying to prep for a marathon, so we need to work on her endurance.\nHey, what's up Marco?\nNot much, just prepping for my next session.\nYou?\nGetting ready for a run, trying to get out of here before traffic gets bad.\nYeah, I feel you.\nI'm gonna have to reschedule with Emily, she's not feeling well.\nBummer, hope she feels better soon.",
+      "device_data": {
+        "scene_id": 3,
+        "smartwatch": {
+          "heart_rate": [
+            80,
+            82,
+            81
+          ],
+          "steps": 1200,
+          "active_minutes": 30,
+          "calories_burned": 150
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 5,
+          "speed": 0.0
+        },
+        "smartphone": {
+          "screen_time_minutes": 5,
+          "notifications_count": 2,
+          "battery_level": 80,
+          "app_usage": {
+            "communication": 2,
+            "productivity": 1
+          }
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 70,
+          "skin_temperature": 32.5
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22.0,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "off",
+            "kitchen": "off"
+          },
+          "motion_detected": false,
+          "alarm_status": "armed",
+          "co2_level": 600,
+          "gas_detected": false,
+          "smoke_detected": false
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Training Session with Rachel",
+          "start_time": "14:20",
+          "end_time": "15:20",
+          "location": "Gym or Running Track",
+          "description": "Marathon prep - endurance training"
+        },
+        {
+          "title": "Rescheduled Meeting with Emily",
+          "start_time": "",
+          "end_time": "",
+          "location": "",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Marco",
+          "timestamp": "13:45",
+          "content": "Hey, what's up? Just grabbing a snack before my next session."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Marco",
+          "timestamp": "13:46",
+          "content": "Not much, just prepping for my next session. You?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Marco",
+          "timestamp": "13:47",
+          "content": "Getting ready for a run, trying to get out of here before traffic gets bad."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Marco",
+          "timestamp": "13:48",
+          "content": "Yeah, I feel you."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Marco",
+          "timestamp": "13:50",
+          "content": "Gotta reschedule with Emily, she's not feeling well. Hope she feels better soon."
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Gym Admin",
+          "timestamp": "13:52",
+          "content": "Reminder: Rachel's training session in 15 minutes. Please review her plan."
+        },
+        {
+          "platform": "Telegram",
+          "direction": "sent",
+          "contact": "Rachel",
+          "timestamp": "13:55",
+          "content": "Hey Rach, just a heads up, I'm 5 minutes out. Ready to crush your endurance training?"
+        },
+        {
+          "platform": "Email",
+          "direction": "received",
+          "contact": "Emily",
+          "timestamp": "13:58",
+          "content": "Hi Alex, so sorry but I'm not feeling well and need to reschedule our session. Hope you understand."
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 3,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low step count (1200) and active minutes (30) indicate insufficient physical activity"
+        },
+        "sleep": {
+          "status": "UNKNOWN",
+          "reason": "No sleep data available"
+        },
+        "stress": {
+          "status": "OK",
+          "reason": "Normal heart rate variability (70) and body temperature (36.8°C)"
+        },
+        "workload": {
+          "status": "OK",
+          "reason": "No indication of excessive workload or continuous activity"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "Healthy social activity with messages sent and received"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Comfortable indoor temperature (22.0°C) and humidity (50%)"
+        },
+        "emotional_tone": {
+          "status": "POSITIVE",
+          "reason": "Positive tone in messages sent and received"
+        },
+        "digital_behavior": {
+          "status": "BALANCED",
+          "reason": "Low screen time (5 minutes) and few notifications (2)"
+        }
+      }
+    },
+    {
+      "scene_id": 4,
+      "day": "Friday",
+      "time": "evening",
+      "description": "I'm winding down after a long day of training sessions.\nI'm texting my best friend Emily, she's been blowing up my phone all day.\nHey Em what's up?\nI'm so done with today, had to reschedule two clients due to traffic.\nYeah I feel you, I had a crazy morning too.\nWe should grab drinks this weekend and catch up.\nDefinitely, I'm free Saturday night.\nAlright, I'll send you my number and we can finalize plans.\nOkay, love you.\nLove you too.",
+      "device_data": {
+        "scene_id": 4,
+        "smartwatch": {
+          "heart_rate": [
+            80,
+            85,
+            82
+          ],
+          "steps": 500,
+          "active_minutes": 0,
+          "sleep_duration": 0,
+          "calories_burned": 150
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 10,
+          "altitude": 10,
+          "speed": 0
+        },
+        "smartphone": {
+          "screen_time_minutes": 20,
+          "notifications_count": 10,
+          "battery_level": 80,
+          "app_usage": {
+            "communication": 10,
+            "social": 5
+          },
+          "unlock_count": 3
+        },
+        "smartring": {
+          "body_temperature": 36.5,
+          "heart_rate_variability": 80,
+          "skin_temperature": 32,
+          "sleep_score": 0,
+          "spo2": 98
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "dimmed",
+            "bedroom": "off",
+            "kitchen": "off"
+          },
+          "motion_detected": {
+            "living_room": true,
+            "bedroom": false,
+            "kitchen": false
+          },
+          "thermostat_setting": 21,
+          "alarm_status": "disarmed",
+          "co2_level": 600,
+          "gas_detected": false,
+          "smoke_detected": false
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Drinks with Emily",
+          "start_time": "19:00",
+          "end_time": "21:00",
+          "location": "TBD",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Emily",
+          "timestamp": "17:05",
+          "content": "Hey Em what's up?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Emily",
+          "timestamp": "17:07",
+          "content": "I'm so done with today, had to reschedule two clients due to traffic."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Emily",
+          "timestamp": "17:09",
+          "content": "Yeah I feel you, I had a crazy morning too."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Emily",
+          "timestamp": "17:11",
+          "content": "We should grab drinks this weekend and catch up."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Emily",
+          "timestamp": "17:13",
+          "content": "Definitely, I'm free Saturday night."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Emily",
+          "timestamp": "17:15",
+          "content": "Alright, I'll send you my number and we can finalize plans."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Emily",
+          "timestamp": "17:17",
+          "content": "Okay, love you."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Emily",
+          "timestamp": "17:18",
+          "content": "Love you too."
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 4,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low steps count (500) and no active minutes"
+        },
+        "sleep": {
+          "status": "INSUFFICIENT/UNKNOWN",
+          "reason": "Insufficient sleep duration (0 hours) or missing data"
+        },
+        "stress": {
+          "status": "WARNING/UNKNOWN",
+          "reason": "Elevated heart rate (82 bpm) but normal HRV (80 ms)"
+        },
+        "workload": {
+          "status": "UNKNOWN",
+          "reason": "Missing work hours and meeting density data"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "Healthy social interaction with Emily via text"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Comfortable indoor temperature (22°C) and humidity (50%)"
+        },
+        "emotional_tone": {
+          "status": "NEUTRAL",
+          "reason": "Neutral tone in conversation with Emily"
+        },
+        "digital_behavior": {
+          "status": "BALANCED",
+          "reason": "Low screen time (20 minutes) and few notifications (10)"
+        }
+      }
+    },
+    {
+      "scene_id": 5,
+      "day": "Wednesday",
+      "time": "evening",
+      "description": "I'm responding to some comments on my latest TikTok video.\nPeople are asking about my favorite workout playlist.\nI'll make a post about it later.\nMy assistant is blowing up my phone, reminding me about a brand collab call tomorrow.\nOkay, gotta take this.\nHey Samantha, what's up?\nThe call is at 10 AM, don't forget.\nGot it, thanks for the reminder.\nI'm trying to unwind after a long day of training sessions.\nThinking about what to make for dinner.\nMaybe I'll order something healthy from that new restaurant downtown.\nI'm so tired, but I need to stay engaged with my followers.\nTime to make some content for tomorrow.",
+      "device_data": {
+        "scene_id": 5,
+        "smartwatch": {
+          "heart_rate": [
+            80,
+            82,
+            85
+          ],
+          "steps": 500,
+          "active_minutes": 30,
+          "calories_burned": 150
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 10,
+          "speed": 0
+        },
+        "smartphone": {
+          "screen_time_minutes": 45,
+          "notifications_count": 5,
+          "battery_level": 70,
+          "app_usage": {
+            "social": 20,
+            "communication": 15,
+            "productivity": 10
+          }
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 80,
+          "skin_temperature": 32.5,
+          "sleep_score": null
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22.5,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "on",
+            "bedroom": "off",
+            "kitchen": "off"
+          },
+          "motion_detected": {
+            "living_room": true,
+            "bedroom": false,
+            "kitchen": false
+          },
+          "thermostat_setting": 22,
+          "alarm_status": "disarmed",
+          "co2_level": 600,
+          "gas_detected": false,
+          "smoke_detected": false
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Brand Collab Call",
+          "start_time": "10:00",
+          "end_time": "11:00",
+          "location": "Online",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "TikTok",
+          "direction": "received",
+          "contact": "Emily",
+          "timestamp": "18:02",
+          "content": "What's your go-to workout playlist? I need some new tunes"
+        },
+        {
+          "platform": "TikTok",
+          "direction": "received",
+          "contact": "David",
+          "timestamp": "18:05",
+          "content": "Love your latest vid! What songs are you listening to during your workouts?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Samantha",
+          "timestamp": "18:10",
+          "content": "Hey Alex, just a reminder that brand collab call is tomorrow at 10 AM"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Samantha",
+          "timestamp": "18:12",
+          "content": "Got it, thanks for the reminder"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Samantha",
+          "timestamp": "18:15",
+          "content": "Also, did you finalize the social media posts for the collab?"
+        },
+        {
+          "platform": "Slack",
+          "direction": "received",
+          "contact": "Team Admin",
+          "timestamp": "18:20",
+          "content": "Reminder: Team meeting on Friday at 2 PM"
+        },
+        {
+          "platform": "Instagram",
+          "direction": "received",
+          "contact": "FitFrenzy",
+          "timestamp": "18:25",
+          "content": "Collab opportunity! DM me"
+        },
+        {
+          "platform": "SMS",
+          "direction": "sent",
+          "contact": "Mom",
+          "timestamp": "18:30",
+          "content": "Hey Mom, just got slammed with work. Will catch up later"
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 5,
+        "error": "Error code: 400 - {'error': {'message': 'tool call validation failed: parameters for tool validate_sleep_duration did not match schema: errors: [`/sleep_minutes`: expected integer, but got null]', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '[\\n  {\\n    \"name\": \"validate_steps_count\",\\n    \"parameters\": {\\n      \"steps\": 500\\n    }\\n  },\\n  {\\n    \"name\": \"validate_active_minutes\",\\n    \"parameters\": {\\n      \"active_minutes\": 30\\n    }\\n  },\\n  {\\n    \"name\": \"validate_heart_rate\",\\n    \"parameters\": {\\n      \"heart_rate\": 82,\\n      \"context\": \"rest\"\\n    }\\n  },\\n  {\\n    \"name\": \"validate_hrv\",\\n    \"parameters\": {\\n      \"hrv\": 80\\n    }\\n  },\\n  {\\n    \"name\": \"validate_body_temperature\",\\n    \"parameters\": {\\n      \"temperature\": 36.8\\n    }\\n  },\\n  {\\n    \"name\": \"validate_sleep_duration\",\\n    \"parameters\": {\\n      \"sleep_minutes\": null\\n    }\\n  }\\n]'}}"
+      }
+    },
+    {
+      "scene_id": 6,
+      "day": "Saturday",
+      "time": "evening",
+      "description": "I'm at the gym with my friend Rachel.\nWe're taking a rest day from working out today.\nI'm catching up on some emails real quick.\nOkay, I'm responding to a message from my manager.\nWe need to discuss a potential brand partnership.\nShe's asking me to meet up tomorrow to talk more about it.\nSounds good to me.\nI'm gonna grab a smoothie with her afterwards.\nWant to join us for a bit?\nNo, I'm good.\nI'll just hang out here and scroll through Instagram.\nI'm a bit worried about my upcoming fitness challenge.\nI need to make sure I'm promoting it enough on social media.\nRachel's telling me to take a break and not stress about it too much.\nYeah, I know you're right.",
+      "device_data": {
+        "scene_id": 6,
+        "smartwatch": {
+          "heart_rate": [
+            85,
+            90,
+            88,
+            92
+          ],
+          "steps": 500,
+          "active_minutes": 0,
+          "distance": 0.2
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 10.0,
+          "speed": 0.0
+        },
+        "smartphone": {
+          "screen_time_minutes": 45,
+          "notifications_count": 5,
+          "battery_level": 80,
+          "app_usage": {
+            "communication": 15,
+            "productivity": 10,
+            "social": 10,
+            "email": 10
+          }
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 70,
+          "skin_temperature": 32.5
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "locked"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22.0,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "off",
+            "bedroom": "off",
+            "kitchen": "off"
+          },
+          "motion_detected": false,
+          "alarm_status": "armed",
+          "co2_level": 600
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Meeting with Manager",
+          "start_time": "10:00",
+          "end_time": "11:00",
+          "location": "Office or Online",
+          "description": ""
+        },
+        {
+          "title": "Smoothie with Manager",
+          "start_time": "11:00",
+          "end_time": "12:00",
+          "location": "Smoothie Bar",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "Email",
+          "direction": "received",
+          "contact": "Manager",
+          "timestamp": "18:05",
+          "content": "Hi Alex, hope you're doing well. I wanted to touch base with you about the potential brand partnership. Would you be available to meet up tomorrow to discuss further?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Manager",
+          "timestamp": "18:07",
+          "content": "Hey! Yeah, I'm free tomorrow. What time were you thinking?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Rachel",
+          "timestamp": "18:10",
+          "content": "Hey, what's going on? You been on your phone for 10 mins"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Rachel",
+          "timestamp": "18:12",
+          "content": "Just responding to my manager. We need to discuss a brand partnership. Want to grab a smoothie with me afterwards?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Rachel",
+          "timestamp": "18:14",
+          "content": "No thanks, I'm good. You go ahead"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Rachel",
+          "timestamp": "18:16",
+          "content": "I'm a bit stressed about my fitness challenge coming up. I need to promote it more on social media"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Rachel",
+          "timestamp": "18:18",
+          "content": "Take a break, Alex. You've got this. Don't stress too much"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Rachel",
+          "timestamp": "18:20",
+          "content": "Yeah, I know you're right. Thanks for talking me down"
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 6,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low step count (500) and no active minutes"
+        },
+        "sleep": {
+          "status": "UNKNOWN",
+          "reason": "No sleep data available"
+        },
+        "stress": {
+          "status": "WARNING",
+          "reason": "Elevated heart rate (90 bpm) and user mentions stress about fitness challenge"
+        },
+        "workload": {
+          "status": "WARNING",
+          "reason": "User has meeting and work-related activities scheduled"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "User is interacting with friend Rachel and manager"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Temperature (22°C) and humidity (50%) are comfortable"
+        },
+        "emotional_tone": {
+          "status": "NEUTRAL",
+          "reason": "User expresses stress but also relief after talking to Rachel"
+        },
+        "digital_behavior": {
+          "status": "BALANCED",
+          "reason": "Moderate screen time (45 minutes) and app usage"
+        }
+      }
+    },
+    {
+      "scene_id": 7,
+      "day": "Sunday",
+      "time": "evening",
+      "description": "I'm sitting on my couch now, going through my emails.\nGot a few messages from brands I work with, checking in on some upcoming campaigns.\nI'm also getting ready to plan out my social media content for the week.\nMy assistant, Jamie, is calling me.\nHey Jamie, what's up?\nNot much, just getting ready to block out my content calendar.\nCan you send me those graphics you worked on last week?\nYeah, I'll send them over right now.\nAnd don't forget, we've got a meeting with a potential new client on Wednesday.\nGot it, thanks for the reminder.\nI'm making a mental note to follow up with them on Tuesday.\nOkay, talk to you soon.",
+      "device_data": {
+        "scene_id": 7,
+        "smartwatch": {
+          "heart_rate": [
+            60,
+            62,
+            65
+          ],
+          "steps": 100,
+          "active_minutes": 5,
+          "calories_burned": 20
+        },
+        "gps": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "accuracy": 5,
+          "speed": 0
+        },
+        "smartphone": {
+          "screen_time_minutes": 45,
+          "notifications_count": 2,
+          "battery_level": 80,
+          "app_usage": {
+            "communication": 10,
+            "productivity": 20,
+            "email": 15
+          }
+        },
+        "smartring": {
+          "body_temperature": 36.8,
+          "heart_rate_variability": 80,
+          "skin_temperature": 32.5
+        },
+        "smart_home": {
+          "doors_status": {
+            "front_door": "locked",
+            "back_door": "locked",
+            "garage": "closed"
+          },
+          "windows_status": {
+            "living_room": "closed",
+            "bedroom": "closed",
+            "kitchen": "closed"
+          },
+          "indoor_temperature": 22.5,
+          "indoor_humidity": 50,
+          "light_status": {
+            "living_room": "on",
+            "kitchen": "off"
+          },
+          "motion_detected": {
+            "living_room": true,
+            "kitchen": false
+          },
+          "alarm_status": "disarmed",
+          "co2_level": 600,
+          "gas_detected": false,
+          "smoke_detected": false,
+          "thermostat_setting": 22
+        }
+      },
+      "calendar_events": [
+        {
+          "title": "Meeting with Potential New Client",
+          "start_time": "10:00",
+          "end_time": "11:00",
+          "location": "Online/Office",
+          "description": ""
+        }
+      ],
+      "messages": [
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Jamie",
+          "timestamp": "18:05",
+          "content": "Hey Jamie, what's up?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Jamie",
+          "timestamp": "18:07",
+          "content": "Not much, just getting ready to block out my content calendar. Can you send me those graphics you worked on last week?"
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "sent",
+          "contact": "Jamie",
+          "timestamp": "18:09",
+          "content": "Yeah, I'll send them over right now. And don't forget, we've got a meeting with a potential new client on Wednesday."
+        },
+        {
+          "platform": "WhatsApp",
+          "direction": "received",
+          "contact": "Jamie",
+          "timestamp": "18:11",
+          "content": "Got it, thanks for the reminder. Okay, talk to you soon."
+        },
+        {
+          "platform": "Email",
+          "direction": "received",
+          "contact": "FitCo",
+          "timestamp": "18:00",
+          "content": "Hi Alex, hope you're doing well. Wanted to check in on the upcoming campaign for FitCo. Let me know if there are any updates."
+        },
+        {
+          "platform": "Email",
+          "direction": "received",
+          "contact": "NutriBite",
+          "timestamp": "17:55",
+          "content": "Hi Alex, hope you're having a great Sunday. Just a quick reminder about the social media content we're sponsoring for NutriBite. Looking forward to seeing your posts."
+        }
+      ],
+      "deficiencies": {
+        "scene_id": 7,
+        "physical_activity": {
+          "status": "INSUFFICIENT",
+          "reason": "Low step count (100) and active minutes (5)"
+        },
+        "sleep": {
+          "status": "UNKNOWN",
+          "reason": "No sleep duration data available"
+        },
+        "stress": {
+          "status": "OK",
+          "reason": "Normal heart rate (62) and HRV (80)"
+        },
+        "workload": {
+          "status": "WARNING",
+          "reason": "Some work activity indicated, but not excessive"
+        },
+        "social_interaction": {
+          "status": "OK",
+          "reason": "Healthy social interaction via messages with Jamie"
+        },
+        "environment": {
+          "status": "OK",
+          "reason": "Comfortable indoor temperature (22.5°C) and humidity (50%)"
+        },
+        "emotional_tone": {
+          "status": "NEUTRAL",
+          "reason": "Neutral tone in messages with Jamie"
+        },
+        "digital_behavior": {
+          "status": "BALANCED",
+          "reason": "Moderate screen time (45 minutes) and app usage"
+        }
+      }
+    }
+  ]
+}
