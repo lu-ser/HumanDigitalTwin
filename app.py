@@ -761,13 +761,24 @@ def main():
 
         # Inizializza il KG builder (cached)
         @st.cache_resource
-        def init_kg_builder(_llm):
+        def init_kg_builder(_config, _llm):
             """Inizializza il Knowledge Graph Builder."""
             from src.agents import KnowledgeGraphBuilder, InMemoryKnowledgeGraph
-            storage = InMemoryKnowledgeGraph()
-            return KnowledgeGraphBuilder(_llm, storage=storage)
+            from src.prompts import PromptManager
 
-        kg_builder = init_kg_builder(llm)
+            api_key = _config.get_env('GROQ_API_KEY')
+            storage = InMemoryKnowledgeGraph()
+            prompt_mgr = PromptManager()
+
+            return KnowledgeGraphBuilder(
+                llm_api_key=api_key,
+                llm_model=_llm.model,
+                prompt_manager=prompt_mgr,
+                storage=storage,
+                enable_logging=True
+            )
+
+        kg_builder = init_kg_builder(config, llm)
 
         # Mostra statistiche KG corrente
         st.subheader("📊 Statistiche Knowledge Graph")
@@ -783,12 +794,41 @@ def main():
 
         # Visualizza struttura KG
         if kg_stats["num_broader_topics"] > 0:
-            with st.expander("🌳 Visualizza Struttura Knowledge Graph"):
+            with st.expander("🌳 Visualizza Struttura Knowledge Graph (Testo)"):
                 all_topics = kg_builder.get_storage().get_all_topics()
                 for broader, narrowers in all_topics.items():
                     st.markdown(f"**{broader}**")
                     for narrower in narrowers:
                         st.markdown(f"  └─ {narrower}")
+
+            # Visualizzazione grafica con Plotly (NO Graphviz richiesto!)
+            with st.expander("📊 Visualizza Grafo Interattivo (Plotly)", expanded=True):
+                st.markdown("**Opzioni:**")
+                max_triplets = st.slider("Max triplette per topic", 1, 20, 5, key="max_triplets_viz")
+
+                try:
+                    # Genera il grafo con Plotly
+                    fig = kg_builder.get_storage().to_plotly_network(
+                        max_triplets_per_topic=max_triplets
+                    )
+
+                    if fig:
+                        st.plotly_chart(fig, use_container_width=True)
+
+                        st.markdown("""
+                        **Legenda colori:**
+                        - 🔵 Blu: Knowledge Graph (root)
+                        - 🟢 Verde: Broader Topics
+                        - 🟠 Arancione: Narrower Topics
+                        - ⬜ Grigio: Triplette
+                        """)
+                    else:
+                        st.error("Errore nella generazione del grafo (NetworkX o Plotly non disponibili)")
+                except Exception as e:
+                    st.error(f"Errore nella visualizzazione: {str(e)}")
+                    import traceback
+                    with st.expander("🐛 Debug Info"):
+                        st.code(traceback.format_exc())
 
         st.markdown("---")
 
@@ -946,7 +986,10 @@ def main():
                             st.session_state['kg_builder_results'] = result
 
                         else:
-                            st.error(f"❌ Errore durante la costruzione del KG: {result.get('error', 'Unknown error')}")
+                            error_msg = result.get('error', 'Unknown error')
+                            st.error(f"❌ Errore durante la costruzione del KG")
+                            with st.expander("🐛 Dettagli Errore"):
+                                st.code(error_msg)
 
                     except Exception as e:
                         st.error(f"❌ Errore: {str(e)}")

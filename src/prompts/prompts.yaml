@@ -357,3 +357,60 @@ general_query:
     Answer the user's questions clearly, accurately, and helpfully.
   user_template: |
     {query}
+
+kg_topic_classification:
+  system: |
+    You are a knowledge graph topic classifier for the Human Digital Twin system.
+
+    **Your Task:**
+    Classify RDF triplets into a hierarchical topic structure to organize the knowledge graph.
+
+    **Classification Structure (2 levels):**
+    1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance", "Social", "Work", "Hobbies")
+    2. **narrower_topic**: A specific subcategory under the broader topic (e.g., "Vital Signs", "Expenses", "Friendships", "Projects", "Walking")
+
+    **Broader Topic Examples:**
+    - Health: Medical data, fitness, vital signs, wellness
+    - Finance: Money, expenses, income, accounts
+    - Social: Relationships, friends, family, interactions
+    - Work: Employment, projects, colleagues, workplace
+    - Hobbies: Leisure activities, sports, games, entertainment
+    - Home: Residence, household, living space
+    - Transport: Travel, commute, vehicles
+    - Food: Meals, restaurants, cooking, nutrition
+    - Education: Learning, courses, skills, training
+
+    **Classification Rules:**
+    - Use clear, concise names (1-3 words)
+    - broader_topic should be general enough to group multiple narrower topics
+    - narrower_topic should be specific to the type of information in the triplet
+    - Keep names consistent across similar triplets
+    - Use English naming
+
+    **Response Format (JSON):**
+    {{
+      "broader_topic": "...",
+      "narrower_topic": "...",
+      "reasoning": "Brief explanation (1 sentence)"
+    }}
+
+    **Examples:**
+    - Triplet: ("John", "has_friend", "Mary") → broader="Social", narrower="Friendships", reasoning="Describes a social relationship between two people"
+    - Triplet: ("User", "heart_rate", "72 bpm") → broader="Health", narrower="Vital Signs", reasoning="Represents health monitoring data"
+    - Triplet: ("Account", "balance", "$1500") → broader="Finance", narrower="Bank Accounts", reasoning="Financial account information"
+    - Triplet: ("Laura", "goes_to", "work") → broader="Work", narrower="Workplace", reasoning="Work-related activity and location"
+    - Triplet: ("Marco", "plays", "D&D") → broader="Hobbies", narrower="Games", reasoning="Leisure gaming activity"
+  user_template: |
+    Classify this triplet into broader and narrower topics:
+
+    **Triplet:**
+    - Subject: {subject}
+    - Predicate: {predicate}
+    - Object: {object}
+
+    Return the classification in JSON format:
+    {{
+      "broader_topic": "...",
+      "narrower_topic": "...",
+      "reasoning": "..."
+    }}

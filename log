@@ -1,0 +1,590 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                         🤖 HUMAN DIGITAL TWIN - AGENT LOG                     ║
+║                                                                              ║
+║    Run ID: 20251021_221415                                                   ║
+║    Timestamp: 2025-10-21T22:14:15.020382                                     ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #1                                                                ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:14:41                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: enjoys                                                         │
+│ - Object: passeggiata                                                       │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #2                                                                ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:14:41                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: goesForAWalk                                                   │
+│ - Object: parco vicino                                                      │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #3                                                                ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:14:42                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: leavesAt                                                       │
+│ - Object: sette                                                             │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                SESSION SUMMARY                               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ LLM Calls: 3                                                                 ║
+║ Tool Calls: 0                                                                ║
+║ MCP Requests: 0                                                              ║
+║ Time: 22:14:42                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #4                                                                ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:16:35                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: enjoysActivity                                                 │
+│ - Object: passeggiata                                                       │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #5                                                                ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:16:36                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: walksIn                                                        │
+│ - Object: parco vicino                                                      │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #6                                                                ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:16:36                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: listensTo                                                      │
+│ - Object: musica                                                            │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #7                                                                ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:16:37                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: listensTo                                                      │
+│ - Object: podcast                                                           │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #8                                                                ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:16:38                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: findsHelpful                                                   │
+│ - Object: camminare                                                         │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #9                                                                ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:16:38                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: goesTo                                                         │
+│ - Object: lavoro                                                            │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #10                                                               ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:16:38                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: goesTo                                                         │
+│ - Object: bar                                                               │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #11                                                               ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:16:39                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: Laura                                                            │
+│ - Predicate: drinks                                                         │
+│ - Object: caffè                                                             │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 🤖 LLM CALL #12                                                               ║
+║ Model: meta-llama/llama-4-scout-17b-16e-instruct                             ║
+║ Time: 22:16:40                                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📤 PROMPT ────────────────────────────────────────────────────────────────┐
+│ [SYSTEM]
+│ You are a knowledge graph topic classifier for the Human Digital Twin syst...
+│                                                                             │
+│ **Your Task:**                                                              │
+│ Classify RDF triplets into a hierarchical topic structure to organize the ...
+│                                                                             │
+│ **Classification Structure (2 levels):**                                    │
+│ 1. **broader_topic**: A broad, reusable category (e.g., "Health", "Finance...
+│ 2. **narrower_topic**: A specific subcategory under the broader topic (e.g...
+│                                                                             │
+│ **Broader Topic Examples:**                                                 │
+│ - Health: Medical data, fitness, vital signs, wellness                      │
+│ - Finance: Money, expenses, income, accounts                                │
+│ - Social: Relationships, friends, family, interactions                      │
+│ - Work: Employment, projects, colleagues, workplace                         │
+│ - Hobbies: Leisure activities, sports, games, entertainment                 │
+│ - Home: Residence, household, living space                                  │
+│ - Transport: Travel, commute, vehicles                                      │
+│ - Food: Meals, restaurants, cooking, nutrition                              │
+│ - Education: Learning, courses, skills, training                            │
+│                                                                             │
+│                                                                            │
+│ [HUMAN]
+│ Classify this triplet into broader and narrower topics:                     │
+│                                                                             │
+│ **Triplet:**                                                                │
+│ - Subject: passeggiata                                                      │
+│ - Predicate: isActivityType                                                 │
+│ - Object: leisure                                                           │
+│                                                                             │
+│ Return the classification in JSON format:                                   │
+│ {                                                                           │
+│   "broader_topic": "...",                                                   │
+│   "narrower_topic": "...",                                                  │
+│   "reasoning": "..."                                                        │
+│ }                                                                           │
+│                                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+[22:16:40] ERROR:
+Context: KG Build
+Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.
+For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT
+
+Stack trace:
+Traceback (most recent call last):
+  File "C:\Users\luigi\Python_proj\HumanDigitalTwin\src\agents\knowledge_graph_builder.py", line 693, in run
+    final_state = self.graph.invoke(initial_state)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\luigi\Python_proj\HumanDigitalTwin\.venv\Lib\site-packages\langgraph\pregel\main.py", line 3085, in invoke
+    for chunk in self.stream(
+                 ^^^^^^^^^^^^
+  File "c:\Users\luigi\Python_proj\HumanDigitalTwin\.venv\Lib\site-packages\langgraph\pregel\main.py", line 2702, in stream
+    raise GraphRecursionError(msg)
+langgraph.errors.GraphRecursionError: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.
+For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT
+
+--------------------------------------------------------------------------------
