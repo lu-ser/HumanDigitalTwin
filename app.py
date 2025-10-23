@@ -781,6 +781,16 @@ def main():
                 neo4j_password = _config.get_env('NEO4J_PASSWORD')
                 neo4j_database = _config.get_env('NEO4J_DATABASE', neo4j_config.get('database', 'neo4j'))
 
+                # Recupera person_id e person_name da session_state se disponibili
+                person_id = st.session_state.get('selected_person_id')
+                person_name = st.session_state.get('selected_person_name')
+
+                # Fallback a default se non specificati
+                if not person_id:
+                    person_id = 'main_person'
+                if not person_name:
+                    person_name = 'User'
+
                 if not neo4j_password:
                     st.warning("⚠️ NEO4J_PASSWORD non trovata in .env. Uso storage in-memory come fallback.")
                     storage = InMemoryKnowledgeGraph()
@@ -790,9 +800,11 @@ def main():
                             uri=neo4j_uri,
                             username=neo4j_username,
                             password=neo4j_password,
-                            database=neo4j_database
+                            database=neo4j_database,
+                            person_id=person_id,
+                            person_name=person_name
                         )
-                        st.success(f"✅ Connesso a Neo4j: {neo4j_uri} (database: {neo4j_database})")
+                        st.success(f"✅ Connesso a Neo4j: {neo4j_uri} (database: {neo4j_database}, profilo: {person_name})")
                     except Exception as e:
                         st.error(f"❌ Errore connessione Neo4j: {str(e)}. Uso storage in-memory come fallback.")
                         storage = InMemoryKnowledgeGraph()
@@ -810,6 +822,156 @@ def main():
             )
 
         kg_builder = init_kg_builder(config, llm)
+
+        # Gestione Profili Person (solo per Neo4j)
+        storage = kg_builder.get_storage()
+        kg_config = config.get('knowledge_graph', {})
+        storage_type = kg_config.get('storage_type', 'in_memory')
+
+        if storage_type == 'neo4j' and hasattr(storage, 'get_all_persons'):
+            st.subheader("👤 Gestione Profili Person")
+
+            # Recupera tutti i profili esistenti
+            all_persons = storage.get_all_persons()
+
+            # Mostra profilo corrente
+            current_person_info = f"**Profilo corrente:** {storage.person_name} (ID: `{storage.person_id}`)"
+            st.info(current_person_info)
+
+            # Expander per gestire profili
+            with st.expander("🔧 Gestione Profili", expanded=False):
+                # Tab per creare nuovo profilo o cancellare
+                profile_tab1, profile_tab2 = st.tabs(["➕ Crea Nuovo Profilo", "🗑️ Elimina Profilo"])
+
+                with profile_tab1:
+                    st.markdown("Crea un nuovo profilo Person per il Knowledge Graph")
+
+                    new_person_name = st.text_input("Nome del profilo:", placeholder="Mario Rossi", key="new_person_name")
+                    new_person_id = st.text_input(
+                        "ID univoco (opzionale):",
+                        placeholder="Lascia vuoto per generazione automatica",
+                        key="new_person_id",
+                        help="Se vuoto, verrà generato automaticamente dal nome"
+                    )
+
+                    if st.button("✨ Crea Profilo", type="primary", key="create_profile_btn"):
+                        if new_person_name:
+                            # Genera ID se non fornito
+                            if not new_person_id:
+                                import re
+                                new_person_id = re.sub(r'[^a-z0-9_]', '_', new_person_name.lower().strip())
+
+                            try:
+                                # Crea nuovo storage con il nuovo person_id
+                                from src.agents import Neo4jKnowledgeGraph
+
+                                neo4j_config = kg_config.get('neo4j', {})
+                                neo4j_uri = config.get_env('NEO4J_URI', neo4j_config.get('uri', 'bolt://localhost:7687'))
+                                neo4j_username = config.get_env('NEO4J_USERNAME', 'neo4j')
+                                neo4j_password = config.get_env('NEO4J_PASSWORD')
+                                neo4j_database = config.get_env('NEO4J_DATABASE', neo4j_config.get('database', 'neo4j'))
+
+                                # Crea la Person (setup_schema la crea)
+                                temp_storage = Neo4jKnowledgeGraph(
+                                    uri=neo4j_uri,
+                                    username=neo4j_username,
+                                    password=neo4j_password,
+                                    database=neo4j_database,
+                                    person_id=new_person_id,
+                                    person_name=new_person_name
+                                )
+                                temp_storage.close()
+
+                                st.success(f"✅ Profilo '{new_person_name}' creato con successo! (ID: `{new_person_id}`)")
+                                st.info("💡 Ricarica la pagina per vedere il nuovo profilo")
+
+                            except Exception as e:
+                                st.error(f"❌ Errore durante la creazione del profilo: {str(e)}")
+                        else:
+                            st.warning("⚠️ Inserisci un nome per il profilo")
+
+                with profile_tab2:
+                    st.markdown("⚠️ **Attenzione:** Eliminare un profilo cancellerà **permanentemente** tutti i dati associati (topics e triplette)")
+
+                    # Pulsante per pulire nodi legacy
+                    st.markdown("---")
+                    st.markdown("### 🧹 Pulizia Database")
+                    st.caption("Rimuovi nodi vecchi (senza person_id) dal database dopo migration")
+
+                    if st.button("🧹 Pulisci Nodi Legacy", key="cleanup_legacy_btn"):
+                        try:
+                            cleanup_result = storage.cleanup_legacy_nodes()
+                            if cleanup_result["deleted_broader_topics"] > 0 or cleanup_result["deleted_narrower_topics"] > 0:
+                                st.success(f"✅ Pulizia completata!")
+                                st.info(f"Rimossi: {cleanup_result['deleted_broader_topics']} broader topics, "
+                                       f"{cleanup_result['deleted_narrower_topics']} narrower topics, "
+                                       f"{cleanup_result['deleted_triplets']} triplette")
+                            else:
+                                st.info("✅ Nessun nodo legacy trovato. Database già pulito!")
+                        except Exception as e:
+                            st.error(f"❌ Errore durante la pulizia: {str(e)}")
+
+                    st.markdown("---")
+
+                    if all_persons and len(all_persons) > 0:
+                        # Lista profili
+                        person_options = [f"{p['name']} (ID: {p['id']})" for p in all_persons]
+                        selected_person_idx = st.selectbox(
+                            "Seleziona profilo da eliminare:",
+                            range(len(all_persons)),
+                            format_func=lambda i: person_options[i],
+                            key="delete_person_select"
+                        )
+
+                        selected_person = all_persons[selected_person_idx]
+
+                        # Conferma eliminazione
+                        confirm_delete = st.checkbox(
+                            f"Sono sicuro di voler eliminare '{selected_person['name']}'",
+                            key="confirm_delete_checkbox"
+                        )
+
+                        if st.button("🗑️ Elimina Profilo", type="secondary", disabled=not confirm_delete, key="delete_profile_btn"):
+                            try:
+                                success = storage.delete_person(selected_person['id'])
+                                if success:
+                                    st.success(f"✅ Profilo '{selected_person['name']}' eliminato con successo!")
+                                    st.info("💡 Ricarica la pagina per aggiornare la lista")
+                                else:
+                                    st.warning("⚠️ Profilo non trovato o già eliminato")
+                            except Exception as e:
+                                st.error(f"❌ Errore durante l'eliminazione: {str(e)}")
+                    else:
+                        st.info("Nessun profilo disponibile da eliminare")
+
+            # Selector per cambiare profilo
+            if all_persons and len(all_persons) > 1:
+                st.markdown("### 🔄 Cambia Profilo Attivo")
+
+                person_names = [p['name'] for p in all_persons]
+                current_idx = next((i for i, p in enumerate(all_persons) if p['id'] == storage.person_id), 0)
+
+                selected_person_name = st.selectbox(
+                    "Seleziona profilo da usare:",
+                    person_names,
+                    index=current_idx,
+                    key="switch_person_select"
+                )
+
+                # Trova il profilo selezionato
+                selected_person_data = next((p for p in all_persons if p['name'] == selected_person_name), None)
+
+                if selected_person_data and selected_person_data['id'] != storage.person_id:
+                    st.info(f"💡 Hai selezionato '{selected_person_name}'. Clicca il pulsante per cambiare profilo.")
+
+                    if st.button("🔄 Cambia Profilo", type="primary", key="switch_profile_btn"):
+                        # Clear cache e rerun con nuovo person_id
+                        st.cache_resource.clear()
+                        st.session_state['selected_person_id'] = selected_person_data['id']
+                        st.session_state['selected_person_name'] = selected_person_data['name']
+                        st.rerun()
+
+            st.markdown("---")
 
         # Mostra statistiche KG corrente
         st.subheader("📊 Statistiche Knowledge Graph")
@@ -846,13 +1008,40 @@ def main():
                     if fig:
                         st.plotly_chart(fig, use_container_width=True)
 
-                        st.markdown("""
-                        **Legenda colori:**
-                        - 🔵 Blu: Knowledge Graph (root)
-                        - 🟢 Verde: Broader Topics
-                        - 🟠 Arancione: Narrower Topics
-                        - ⬜ Grigio: Triplette
-                        """)
+                        # Legenda dinamica
+                        st.markdown("**Legenda tipi di entità:**")
+
+                        # Ottieni i tipi dal grafo
+                        if hasattr(kg_builder.get_storage(), 'get_entity_types_legend'):
+                            entity_legend = kg_builder.get_storage().get_entity_types_legend()
+
+                            # Person root sempre blu
+                            st.markdown("- 🔵 **Person** (profilo root)")
+
+                            # Altri tipi dinamici
+                            emoji_map = {
+                                'Person': '👤',
+                                'Place': '📍',
+                                'Activity': '⚡',
+                                'Thing': '📦',
+                                'Organization': '🏢',
+                                'Event': '📅',
+                                'Document': '📄'
+                            }
+
+                            for entity_type, color in sorted(entity_legend.items()):
+                                emoji = emoji_map.get(entity_type, '🔹')
+                                st.markdown(f"- {emoji} **{entity_type}**")
+
+                            st.markdown("\n**Note:** Le relazioni mostrano il predicato e il narrower topic.")
+                        else:
+                            # Fallback per InMemoryKnowledgeGraph
+                            st.markdown("""
+                            - 🔵 Blu: Knowledge Graph (root)
+                            - 🟢 Verde: Broader Topics
+                            - 🟠 Arancione: Narrower Topics
+                            - ⬜ Grigio: Triplette
+                            """)
                     else:
                         st.error("Errore nella generazione del grafo (NetworkX o Plotly non disponibili)")
                 except Exception as e:
@@ -933,6 +1122,22 @@ def main():
                     value=True,
                     help="Se disabilitato, le triplette vengono processate senza validazione ontologica"
                 )
+
+                # Pulsante per pulire nodi legacy (solo Neo4j)
+                if storage_type == 'neo4j' and hasattr(storage, 'cleanup_legacy_nodes'):
+                    st.markdown("---")
+                    st.markdown("### 🧹 Manutenzione")
+
+                    if st.button("🧹 Pulisci Nodi Legacy", key="sidebar_cleanup_btn", help="Rimuove nodi BroaderTopic/NarrowerTopic/Triplet del vecchio schema"):
+                        try:
+                            with st.spinner("Pulizia in corso..."):
+                                cleanup_result = storage.cleanup_legacy_nodes()
+                                if cleanup_result["deleted_broader_topics"] > 0 or cleanup_result["deleted_narrower_topics"] > 0:
+                                    st.success(f"✅ Rimossi: {cleanup_result['deleted_broader_topics']} broader, {cleanup_result['deleted_narrower_topics']} narrower, {cleanup_result['deleted_triplets']} triplet")
+                                else:
+                                    st.info("✅ Nessun nodo legacy trovato")
+                        except Exception as e:
+                            st.error(f"❌ Errore: {str(e)}")
 
             # Pulsante per costruire il KG
             if st.button("🚀 Costruisci Knowledge Graph", type="primary"):
@@ -1015,6 +1220,56 @@ def main():
 
                             # Salva in session state
                             st.session_state['kg_builder_results'] = result
+
+                            # Visualizza automaticamente il grafo
+                            if updated_stats["num_broader_topics"] > 0:
+                                st.markdown("---")
+                                st.subheader("📊 Visualizzazione Grafo")
+
+                                max_triplets = st.slider(
+                                    "Max triplette per topic:",
+                                    1, 20, 5,
+                                    key="viz_max_triplets"
+                                )
+
+                                try:
+                                    fig = kg_builder.get_storage().to_plotly_network(
+                                        max_triplets_per_topic=max_triplets
+                                    )
+
+                                    if fig:
+                                        st.plotly_chart(fig, use_container_width=True)
+
+                                        # Legenda dinamica
+                                        st.markdown("**Legenda tipi di entità:**")
+
+                                        # Ottieni i tipi dal grafo
+                                        entity_legend = kg_builder.get_storage().get_entity_types_legend()
+
+                                        # Person root sempre blu
+                                        st.markdown("- 🔵 **Person** (profilo root)")
+
+                                        # Altri tipi dinamici
+                                        emoji_map = {
+                                            'Person': '👤',
+                                            'Place': '📍',
+                                            'Activity': '⚡',
+                                            'Thing': '📦',
+                                            'Organization': '🏢',
+                                            'Event': '📅',
+                                            'Document': '📄'
+                                        }
+
+                                        for entity_type, color in sorted(entity_legend.items()):
+                                            emoji = emoji_map.get(entity_type, '🔹')
+                                            st.markdown(f"- {emoji} **{entity_type}**")
+
+                                        st.markdown("\n**Note:** Le relazioni mostrano il predicato (es. 'GoesForAWalk') e il narrower topic.")
+
+                                    else:
+                                        st.warning("NetworkX o Plotly non disponibili")
+                                except Exception as e:
+                                    st.error(f"Errore visualizzazione: {str(e)}")
 
                         else:
                             error_msg = result.get('error', 'Unknown error')

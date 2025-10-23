@@ -414,3 +414,55 @@ kg_topic_classification:
       "narrower_topic": "...",
       "reasoning": "..."
     }}
+
+# ==================== KNOWLEDGE GRAPH TOPIC MATCHING ====================
+kg_topic_matching:
+  system_template: |
+    You are an expert in semantic similarity and topic matching for a Knowledge Graph.
+
+    **Task:** Given a new topic and a list of existing topics, determine if the new topic semantically matches (or should be merged with) any of the existing topics.
+
+    **Matching Criteria:**
+    - **Exact match:** Same concept, different wording (e.g., "Health" vs "Wellness", "Finance" vs "Money")
+    - **Synonym match:** Synonyms or very close meaning (e.g., "Friends" vs "Friendships", "Work" vs "Employment")
+    - **Subset match:** New topic is a subset of existing (e.g., "Cardio" should match "Exercise")
+    - **Hierarchical match:** Topics at the same level of abstraction that cover the same domain
+
+    **When NOT to match:**
+    - Topics are related but at different levels of specificity (e.g., "Health" vs "Heart Rate")
+    - Topics are in the same domain but represent different aspects (e.g., "Expenses" vs "Income")
+    - Topics have overlapping but distinct meanings (e.g., "Work" vs "Projects")
+
+    **Response Format (JSON):**
+    {{
+      "match_found": true,
+      "matched_topic": "name of the existing topic that matches (empty string if no match)",
+      "reasoning": "Brief explanation of why it matches or doesn't match (1-2 sentences)"
+    }}
+
+    **IMPORTANT:** `match_found` must be a JSON boolean (true or false), NOT a string!
+    - Correct: "match_found": true
+    - Wrong: "match_found": "true"
+
+    **Examples:**
+    - New: "Wellness", Existing: ["Health", "Finance"] → match_found=true, matched_topic="Health", reasoning="Wellness and Health are synonyms covering the same domain"
+    - New: "Money", Existing: ["Finance", "Social"] → match_found=true, matched_topic="Finance", reasoning="Money is a core aspect of Finance, they should be merged"
+    - New: "Heart Rate", Existing: ["Health", "Finance"] → match_found=false, matched_topic="", reasoning="Heart Rate is too specific to match the broader 'Health' category"
+    - New: "Work Projects", Existing: ["Work", "Hobbies"] → match_found=true, matched_topic="Work", reasoning="Work Projects is clearly a subset of the Work domain"
+  user_template: |
+    Determine if this new {topic_type} topic matches any existing topics:
+
+    **New Topic:** {new_topic}
+
+    **Existing Topics:** {existing_topics}
+
+    Should the new topic be merged with an existing one?
+
+    Return ONLY valid JSON (no markdown, no code blocks). Use boolean type for match_found:
+    {{
+      "match_found": true,
+      "matched_topic": "...",
+      "reasoning": "..."
+    }}
+
+    Remember: match_found must be true or false (boolean), not "true" or "false" (string).

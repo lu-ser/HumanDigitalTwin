@@ -12,7 +12,7 @@ from typing import TypedDict, List, Dict, Any, Optional
 from langgraph.graph import StateGraph, END
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,21 @@ class TopicClassification(BaseModel):
     broader_topic: str = Field(description="Categoria ampia (es. 'Health', 'Finance', 'Social')")
     narrower_topic: str = Field(description="Sottocategoria specifica (es. 'Heart Rate', 'Expenses', 'Friends')")
     reasoning: str = Field(description="Breve spiegazione della classificazione")
+
+
+class TopicMatchResult(BaseModel):
+    """Risultato del matching semantico di un topic con una lista esistente."""
+    match_found: bool = Field(description="True se è stato trovato un topic simile nella lista, False altrimenti. MUST be a boolean (true/false), not a string.")
+    matched_topic: str = Field(default="", description="Il topic esistente che matcha (vuoto se match_found=False)")
+    reasoning: str = Field(description="Spiegazione del match o del mancato match")
+
+    @field_validator('match_found', mode='before')
+    @classmethod
+    def validate_bool(cls, v):
+        """Converti stringhe in boolean se necessario."""
+        if isinstance(v, str):
+            return v.lower() in ('true', '1', 'yes')
+        return v
 
 
 # ==================== STATE DEFINITION ====================
@@ -41,6 +56,8 @@ class KGBuilderState(TypedDict):
     - processed_triplets: Lista finale di triplette processate (accumulata)
     - existing_topics: Set di coppie (broader, narrower) già esistenti nel KG
     - errors: Lista di errori durante il processing
+    - matched_broader_topic: Broader topic matchato dall'LLM (None se nuovo)
+    - matched_narrower_topic: Narrower topic matchato dall'LLM (None se nuovo)
     """
     triplets: List[Dict[str, Any]]
     ontology_check_enabled: bool
@@ -49,6 +66,8 @@ class KGBuilderState(TypedDict):
     processed_triplets: List[Dict[str, Any]]  # Lista finale (gestita manualmente)
     existing_topics: Dict[str, List[str]]  # {broader_topic: [narrower_topic1, narrower_topic2, ...]}
     errors: List[str]  # Lista errori (gestita manualmente)
+    matched_broader_topic: Optional[str]  # Broader topic matchato (None se nuovo)
+    matched_narrower_topic: Optional[str]  # Narrower topic matchato (None se nuovo)
 
 
 # ==================== NEO4J STORAGE (with LangChain Integration) ====================
@@ -58,18 +77,19 @@ class Neo4jKnowledgeGraph:
     Storage Neo4j per il Knowledge Graph con integrazione LangChain.
 
     Struttura del grafo:
-    - (:KnowledgeGraph) - Root node
-    - (:BroaderTopic {name: "Health"})
-    - (:NarrowerTopic {name: "Vital Signs"})
-    - (:Triplet {subject: "...", predicate: "...", object: "..."})
+    - (:Person {id, name}) - Root node per ogni profilo
+    - Nodi entità estratti dalle triplette (con label dal type LLM)
+    - Relazioni tra entità (dal predicate), con proprietà:
+      - broader_topic: categoria ampia
+      - narrower_topic: sottocategoria
+      - reasoning: spiegazione classificazione
 
-    Relazioni:
-    - (KG)-[:HAS_CATEGORY]->(BroaderTopic)
-    - (BroaderTopic)-[:HAS_SUBCATEGORY]->(NarrowerTopic)
-    - (NarrowerTopic)-[:CONTAINS]->(Triplet)
+    Esempio:
+    (:Person {name: "Mario"})-[:BELONGS_TO]->(:Person {id: "mario_rossi"})
+    (:Person {id: "mario_rossi"})-[goesForAWalk {broader_topic: "Hobbies", narrower_topic: "Walking"}]->(:Place {name: "Parco"})
     """
 
-    def __init__(self, uri: str, username: str, password: str, database: str = "neo4j"):
+    def __init__(self, uri: str, username: str, password: str, database: str = "neo4j", person_id: str = "main_person", person_name: str = "User"):
         """
         Inizializza la connessione a Neo4j.
 
@@ -78,11 +98,15 @@ class Neo4jKnowledgeGraph:
             username: Username per autenticazione
             password: Password per autenticazione
             database: Nome del database (default: "neo4j")
+            person_id: ID univoco della Person (default: "main_person")
+            person_name: Nome della Person (default: "User")
         """
         from neo4j import GraphDatabase
 
         self.driver = GraphDatabase.driver(uri, auth=(username, password))
         self.database = database
+        self.person_id = person_id
+        self.person_name = person_name
 
         # Crea root node e constraints se non esistono
         self._setup_schema()
@@ -90,24 +114,136 @@ class Neo4jKnowledgeGraph:
     def _setup_schema(self):
         """Crea constraints e root node del KG."""
         with self.driver.session(database=self.database) as session:
-            # Constraints per unicità
-            session.run("CREATE CONSTRAINT broader_topic_name IF NOT EXISTS FOR (b:BroaderTopic) REQUIRE b.name IS UNIQUE")
-            session.run("CREATE CONSTRAINT narrower_topic_name IF NOT EXISTS FOR (n:NarrowerTopic) REQUIRE (n.name, n.broader_topic) IS UNIQUE")
+            # Rimuovi vecchi constraints globali se esistono (legacy)
+            try:
+                session.run("DROP CONSTRAINT broader_topic_name IF EXISTS")
+                session.run("DROP CONSTRAINT narrower_topic_name IF EXISTS")
+                session.run("DROP CONSTRAINT broader_topic_composite IF EXISTS")
+                session.run("DROP CONSTRAINT narrower_topic_composite IF EXISTS")
+            except Exception:
+                pass  # Constraints potrebbero non esistere
 
-            # Crea root node se non esiste
+            # Constraint per Person.id
+            session.run("CREATE CONSTRAINT person_id IF NOT EXISTS FOR (p:Person) REQUIRE p.id IS UNIQUE")
+
+            # Crea root node Person (ontologia Schema.org)
             session.run("""
-                MERGE (kg:KnowledgeGraph {id: 'main'})
-                ON CREATE SET kg.created_at = datetime()
-            """)
+                MERGE (person:Person {id: $person_id})
+                ON CREATE SET person.created_at = datetime(), person.name = $person_name
+                ON MATCH SET person.last_accessed = datetime()
+            """, person_id=self.person_id, person_name=self.person_name)
 
     def close(self):
         """Chiude la connessione al database."""
         if self.driver:
             self.driver.close()
 
+    def get_all_persons(self) -> List[Dict[str, Any]]:
+        """
+        Ritorna tutti i profili Person nel database.
+
+        Returns:
+            Lista di dict con info su ogni Person
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run("""
+                MATCH (p:Person)
+                RETURN p.id AS id, p.name AS name, p.created_at AS created_at, p.last_accessed AS last_accessed
+                ORDER BY p.created_at DESC
+            """)
+            return [dict(record) for record in result]
+
+    def delete_person(self, person_id: str) -> bool:
+        """
+        Cancella un profilo Person e tutto il suo grafo.
+
+        Args:
+            person_id: ID della Person da cancellare
+
+        Returns:
+            True se cancellato, False altrimenti
+        """
+        with self.driver.session(database=self.database) as session:
+            # Cancella Person e tutti i nodi collegati (cascade)
+            result = session.run("""
+                MATCH (p:Person {id: $person_id})
+                OPTIONAL MATCH (p)-[:HAS_CATEGORY]->(b:BroaderTopic)-[:HAS_SUBCATEGORY]->(n:NarrowerTopic)-[:CONTAINS]->(t:Triplet)
+                DETACH DELETE p, b, n, t
+                RETURN count(p) AS deleted
+            """, person_id=person_id)
+            record = result.single()
+            return record["deleted"] > 0 if record else False
+
+    def cleanup_legacy_nodes(self) -> Dict[str, int]:
+        """
+        Rimuove nodi BroaderTopic, NarrowerTopic e Triplet del vecchio schema.
+        Utile dopo migration a schema entità-relazioni.
+
+        Returns:
+            Dict con numero di nodi rimossi per tipo
+        """
+        with self.driver.session(database=self.database) as session:
+            # Rimuovi tutti i nodi del vecchio schema
+            result = session.run("""
+                MATCH (b:BroaderTopic)
+                OPTIONAL MATCH (b)-[:HAS_SUBCATEGORY]->(n:NarrowerTopic)
+                OPTIONAL MATCH (n)-[:CONTAINS]->(t:Triplet)
+                DETACH DELETE b, n, t
+                RETURN count(DISTINCT b) AS deleted_broader,
+                       count(DISTINCT n) AS deleted_narrower,
+                       count(DISTINCT t) AS deleted_triplets
+            """)
+            record = result.single()
+
+            return {
+                "deleted_broader_topics": record["deleted_broader"] if record else 0,
+                "deleted_narrower_topics": record["deleted_narrower"] if record else 0,
+                "deleted_triplets": record["deleted_triplets"] if record else 0
+            }
+
+    def get_all_broader_topics(self) -> List[str]:
+        """
+        Ritorna tutti i broader topics esistenti nel grafo per questa Person.
+        Estrae i topic dalle proprietà delle relazioni.
+
+        Returns:
+            Lista di nomi dei broader topics (unici)
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run("""
+                MATCH (person:Person {id: $person_id})-[:KNOWS]->(n)-[r]->(m)
+                WHERE r.person_id = $person_id AND r.broader_topic IS NOT NULL
+                RETURN DISTINCT r.broader_topic AS name
+                ORDER BY name
+            """, person_id=self.person_id)
+            return [record["name"] for record in result]
+
+    def get_narrower_topics_for_broader(self, broader_topic: str) -> List[str]:
+        """
+        Ritorna tutti i narrower topics per un dato broader topic di questa Person.
+        Estrae i topic dalle proprietà delle relazioni.
+
+        Args:
+            broader_topic: Broad topic
+
+        Returns:
+            Lista di nomi dei narrower topics (unici)
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run("""
+                MATCH (person:Person {id: $person_id})-[:KNOWS]->(n)-[r]->(m)
+                WHERE r.person_id = $person_id
+                  AND r.broader_topic = $broader
+                  AND r.narrower_topic IS NOT NULL
+                RETURN DISTINCT r.narrower_topic AS name
+                ORDER BY name
+            """, person_id=self.person_id, broader=broader_topic)
+            return [record["name"] for record in result]
+
     def topic_exists(self, broader_topic: str, narrower_topic: str = None) -> bool:
         """
-        Verifica se un topic esiste già nel grafo.
+        Verifica se un topic esiste già nel grafo di questa Person.
+        Cerca nelle proprietà delle relazioni.
 
         Args:
             broader_topic: Broad topic da verificare
@@ -120,139 +256,163 @@ class Neo4jKnowledgeGraph:
             if narrower_topic is None:
                 # Check solo broader
                 result = session.run("""
-                    MATCH (b:BroaderTopic {name: $broader})
-                    RETURN count(b) > 0 AS exists
-                """, broader=broader_topic)
+                    MATCH (person:Person {id: $person_id})-[:KNOWS]->()-[r]->()
+                    WHERE r.person_id = $person_id AND r.broader_topic = $broader
+                    RETURN count(r) > 0 AS exists
+                """, person_id=self.person_id, broader=broader_topic)
             else:
                 # Check entrambi
                 result = session.run("""
-                    MATCH (b:BroaderTopic {name: $broader})-[:HAS_SUBCATEGORY]->(n:NarrowerTopic {name: $narrower})
-                    RETURN count(n) > 0 AS exists
-                """, broader=broader_topic, narrower=narrower_topic)
+                    MATCH (person:Person {id: $person_id})-[:KNOWS]->()-[r]->()
+                    WHERE r.person_id = $person_id
+                      AND r.broader_topic = $broader
+                      AND r.narrower_topic = $narrower
+                    RETURN count(r) > 0 AS exists
+                """, person_id=self.person_id, broader=broader_topic, narrower=narrower_topic)
 
             record = result.single()
             return record["exists"] if record else False
 
     def add_triplet(self, triplet: Dict[str, Any], broader_topic: str, narrower_topic: str) -> None:
         """
-        Aggiunge una tripletta al grafo con i suoi topic.
+        Aggiunge una tripletta al grafo creando nodi entità e relazioni.
 
         Args:
-            triplet: Tripletta da aggiungere
-            broader_topic: Broad topic
-            narrower_topic: Narrow topic
+            triplet: Tripletta da aggiungere (con subject, predicate, object e i loro tipi)
+            broader_topic: Broad topic (usato come proprietà della relazione)
+            narrower_topic: Narrow topic (usato come proprietà della relazione)
         """
-        # Estrai valori dalla tripletta
+        # Estrai valori e tipi dalla tripletta
         def get_value(field):
             val = triplet.get(field, "")
             if isinstance(val, dict):
                 return val.get("value", str(val))
             return str(val)
 
-        subject = get_value("subject")
-        predicate = get_value("predicate")
-        obj = get_value("object")
+        def get_type(field):
+            val = triplet.get(field, {})
+            if isinstance(val, dict):
+                return val.get("type", "Entity")  # Default type se non specificato
+            return "Entity"
 
-        # Metadata aggiuntivi
-        metadata = {
-            "subject_type": triplet.get("subject", {}).get("type") if isinstance(triplet.get("subject"), dict) else None,
-            "predicate_type": triplet.get("predicate", {}).get("type") if isinstance(triplet.get("predicate"), dict) else None,
-            "object_type": triplet.get("object", {}).get("type") if isinstance(triplet.get("object"), dict) else None,
-            "reasoning": triplet.get("classification_reasoning"),
-            "created_at": "datetime()"
-        }
+        subject_value = get_value("subject")
+        predicate_value = get_value("predicate")
+        object_value = get_value("object")
+
+        subject_type = get_type("subject")
+        predicate_type = get_type("predicate")  # Non usato per ora, ma disponibile
+        object_type = get_type("object")
+
+        # Normalizza il predicate per usarlo come nome relazione (CamelCase, no spazi)
+        import re
+        predicate_rel_type = re.sub(r'[^a-zA-Z0-9_]', '_', predicate_value)
+        predicate_rel_type = ''.join(word.capitalize() for word in predicate_rel_type.split('_'))
+
+        # Metadata per la relazione
+        reasoning = triplet.get("classification_reasoning", "")
 
         with self.driver.session(database=self.database) as session:
-            session.run("""
-                // Crea o trova BroaderTopic
-                MERGE (b:BroaderTopic {name: $broader})
-                ON CREATE SET b.created_at = datetime()
+            # Query Cypher dinamica (il tipo di relazione non può essere parametrizzato)
+            # NOTA: Uso 'obj' invece di 'object' perché è una keyword riservata in Neo4j
+            query = f"""
+                // Match o crea il nodo Subject
+                MERGE (subj:{subject_type} {{name: $subject_value, person_id: $person_id}})
+                ON CREATE SET subj.created_at = datetime()
 
-                // Crea o trova NarrowerTopic
-                MERGE (n:NarrowerTopic {name: $narrower, broader_topic: $broader})
-                ON CREATE SET n.created_at = datetime()
+                // Match o crea il nodo Object
+                MERGE (obj:{object_type} {{name: $object_value, person_id: $person_id}})
+                ON CREATE SET obj.created_at = datetime()
 
-                // Link BroaderTopic -> NarrowerTopic
-                MERGE (b)-[:HAS_SUBCATEGORY]->(n)
+                // Crea la relazione con i topic come proprietà
+                MERGE (subj)-[r:{predicate_rel_type}]->(obj)
+                ON CREATE SET
+                    r.broader_topic = $broader_topic,
+                    r.narrower_topic = $narrower_topic,
+                    r.reasoning = $reasoning,
+                    r.predicate_original = $predicate_original,
+                    r.created_at = datetime(),
+                    r.person_id = $person_id
+                ON MATCH SET
+                    r.last_used = datetime()
 
-                // Link KG -> BroaderTopic
-                WITH b, n
-                MATCH (kg:KnowledgeGraph {id: 'main'})
-                MERGE (kg)-[:HAS_CATEGORY]->(b)
+                // Link subject alla Person se non esiste già
+                WITH subj, obj, r
+                MATCH (person:Person {{id: $person_id}})
+                MERGE (person)-[:KNOWS]->(subj)
 
-                // Crea Triplet
-                WITH n
-                CREATE (t:Triplet {
-                    subject: $subject,
-                    predicate: $predicate,
-                    object: $object,
-                    subject_type: $subject_type,
-                    predicate_type: $predicate_type,
-                    object_type: $object_type,
-                    reasoning: $reasoning,
-                    created_at: datetime()
-                })
+                RETURN subj, obj, r
+            """
 
-                // Link NarrowerTopic -> Triplet
-                CREATE (n)-[:CONTAINS]->(t)
-            """,
-                broader=broader_topic,
-                narrower=narrower_topic,
-                subject=subject,
-                predicate=predicate,
-                object=obj,
-                **metadata
+            session.run(query,
+                person_id=self.person_id,
+                subject_value=subject_value,
+                object_value=object_value,
+                broader_topic=broader_topic,
+                narrower_topic=narrower_topic,
+                reasoning=reasoning,
+                predicate_original=predicate_value
             )
 
-        logger.info(f"Added triplet to Neo4j KG: {broader_topic} → {narrower_topic}")
+        logger.info(f"Added triplet to Neo4j KG: ({subject_value})-[{predicate_rel_type}]->({object_value}) [{broader_topic}/{narrower_topic}]")
 
     def get_all_topics(self) -> Dict[str, List[str]]:
         """
-        Ritorna tutti i topic nel grafo.
+        Ritorna tutti i topic nel grafo di questa Person.
+        Estrae dalle proprietà delle relazioni.
 
         Returns:
             Dict con {broader_topic: [narrower_topic1, narrower_topic2, ...]}
         """
         with self.driver.session(database=self.database) as session:
             result = session.run("""
-                MATCH (b:BroaderTopic)-[:HAS_SUBCATEGORY]->(n:NarrowerTopic)
-                RETURN b.name AS broader, collect(n.name) AS narrowers
-                ORDER BY b.name
-            """)
+                MATCH (person:Person {id: $person_id})-[:KNOWS]->()-[r]->()
+                WHERE r.person_id = $person_id
+                  AND r.broader_topic IS NOT NULL
+                  AND r.narrower_topic IS NOT NULL
+                RETURN r.broader_topic AS broader, collect(DISTINCT r.narrower_topic) AS narrowers
+                ORDER BY broader
+            """, person_id=self.person_id)
 
-            return {record["broader"]: record["narrowers"] for record in result}
+            topics_dict = {}
+            for record in result:
+                broader = record["broader"]
+                if broader not in topics_dict:
+                    topics_dict[broader] = []
+                topics_dict[broader].extend(record["narrowers"])
+
+            # Rimuovi duplicati
+            return {k: sorted(list(set(v))) for k, v in topics_dict.items()}
 
     def get_stats(self) -> Dict[str, int]:
         """
-        Ritorna statistiche sul grafo.
+        Ritorna statistiche sul grafo di questa Person.
 
         Returns:
-            Dict con statistiche (num_broader_topics, num_narrower_topics, num_triplets)
+            Dict con statistiche (num_broader_topics, num_narrower_topics, num_relationships)
         """
         with self.driver.session(database=self.database) as session:
             result = session.run("""
-                MATCH (b:BroaderTopic)
-                OPTIONAL MATCH (n:NarrowerTopic)
-                OPTIONAL MATCH (t:Triplet)
+                MATCH (person:Person {id: $person_id})-[:KNOWS]->()-[r]->()
+                WHERE r.person_id = $person_id
                 RETURN
-                    count(DISTINCT b) AS num_broader,
-                    count(DISTINCT n) AS num_narrower,
-                    count(DISTINCT t) AS num_triplets
-            """)
+                    count(DISTINCT r.broader_topic) AS num_broader,
+                    count(DISTINCT r.narrower_topic) AS num_narrower,
+                    count(r) AS num_relationships
+            """, person_id=self.person_id)
 
             record = result.single()
             return {
-                "num_broader_topics": record["num_broader"],
-                "num_narrower_topics": record["num_narrower"],
-                "num_triplets": record["num_triplets"]
+                "num_broader_topics": record["num_broader"] if record else 0,
+                "num_narrower_topics": record["num_narrower"] if record else 0,
+                "num_triplets": record["num_relationships"] if record else 0  # Keep same key for compatibility
             }
 
     def to_plotly_network(self, max_triplets_per_topic: int = 5):
         """
-        Genera una visualizzazione network interattiva con Plotly.
+        Genera una visualizzazione network interattiva con Plotly del grafo entità-relazioni.
 
         Args:
-            max_triplets_per_topic: Numero massimo di triplette da mostrare per topic
+            max_triplets_per_topic: Numero massimo di relazioni da mostrare (non usato, mantiene compatibilità)
 
         Returns:
             Figure Plotly
@@ -264,93 +424,147 @@ class Neo4jKnowledgeGraph:
             logger.error("plotly or networkx not installed")
             return None
 
-        # Recupera dati da Neo4j
+        # Recupera entità e relazioni da Neo4j per questa Person
         with self.driver.session(database=self.database) as session:
             result = session.run("""
-                MATCH (b:BroaderTopic)-[:HAS_SUBCATEGORY]->(n:NarrowerTopic)-[:CONTAINS]->(t:Triplet)
-                RETURN b.name AS broader, n.name AS narrower,
-                       collect({subject: t.subject, predicate: t.predicate, object: t.object})[..$max] AS triplets
-            """, max=max_triplets_per_topic)
+                MATCH (person:Person {id: $person_id})-[:KNOWS]->(subject)-[r]->(object)
+                WHERE r.person_id = $person_id
+                RETURN
+                    labels(subject)[0] AS subject_type,
+                    subject.name AS subject_name,
+                    type(r) AS rel_type,
+                    r.broader_topic AS broader_topic,
+                    r.narrower_topic AS narrower_topic,
+                    labels(object)[0] AS object_type,
+                    object.name AS object_name
+                LIMIT 100
+            """, person_id=self.person_id)
 
             # Costruisci grafo NetworkX
             G = nx.DiGraph()
-            G.add_node('KG', label='Knowledge Graph', node_type='root')
+            G.add_node('Person', label=self.person_name, node_type='person', size=30)
 
-            node_id = 0
+            # Mappa entità per evitare duplicati
+            entity_nodes = {}
+
             for record in result:
-                broader = record["broader"]
-                narrower = record["narrower"]
-                triplets = record["triplets"]
+                subject_name = record["subject_name"]
+                subject_type = record["subject_type"]
+                object_name = record["object_name"]
+                object_type = record["object_type"]
+                rel_type = record["rel_type"]
+                broader = record["broader_topic"]
+                narrower = record["narrower_topic"]
 
-                broader_id = f'broader_{node_id}'
-                node_id += 1
+                # Crea nodo subject se non esiste
+                subject_id = f"{subject_type}_{subject_name}"
+                if subject_id not in entity_nodes:
+                    G.add_node(subject_id, label=f"{subject_name}", node_type=subject_type, size=20)
+                    entity_nodes[subject_id] = True
+                    # Link alla Person
+                    G.add_edge('Person', subject_id, label='KNOWS')
 
-                if not G.has_node(broader_id):
-                    G.add_node(broader_id, label=broader, node_type='broader')
-                    G.add_edge('KG', broader_id)
+                # Crea nodo object se non esiste
+                object_id = f"{object_type}_{object_name}"
+                if object_id not in entity_nodes:
+                    G.add_node(object_id, label=f"{object_name}", node_type=object_type, size=20)
+                    entity_nodes[object_id] = True
 
-                narrower_id = f'narrower_{node_id}'
-                node_id += 1
+                # Crea relazione con label
+                edge_label = f"{rel_type}\n[{narrower}]"
+                G.add_edge(subject_id, object_id, label=edge_label, rel_type=rel_type, broader=broader, narrower=narrower)
 
-                G.add_node(narrower_id, label=narrower, node_type='narrower')
-                G.add_edge(broader_id, narrower_id)
+        # Layout grafo
+        pos = nx.spring_layout(G, k=3, iterations=50, seed=42)
 
-                for triplet in triplets:
-                    triplet_id = f'triplet_{node_id}'
-                    node_id += 1
+        # Traces per archi con label
+        edge_traces = []
+        edge_annotations = []
 
-                    label = f"{triplet['subject']}\n→{triplet['predicate']}\n→{triplet['object']}"
-                    G.add_node(triplet_id, label=label, node_type='triplet')
-                    G.add_edge(narrower_id, triplet_id)
+        for edge in G.edges(data=True):
+            source, target, data = edge
+            x0, y0 = pos[source]
+            x1, y1 = pos[target]
 
-        # Layout e rendering (stesso codice di InMemoryKnowledgeGraph)
-        pos = nx.spring_layout(G, k=2, iterations=50, seed=42)
+            # Linea dell'arco
+            edge_trace = go.Scatter(
+                x=[x0, x1, None],
+                y=[y0, y1, None],
+                line=dict(width=1.5, color='#888'),
+                hoverinfo='none',
+                mode='lines',
+                showlegend=False
+            )
+            edge_traces.append(edge_trace)
 
-        edge_x, edge_y = [], []
-        for edge in G.edges():
-            x0, y0 = pos[edge[0]]
-            x1, y1 = pos[edge[1]]
-            edge_x.extend([x0, x1, None])
-            edge_y.extend([y0, y1, None])
+            # Annotazione per la label (al centro dell'arco)
+            edge_label = data.get('label', '')
+            if edge_label and edge_label != 'KNOWS':  # Non mostrare KNOWS
+                mid_x = (x0 + x1) / 2
+                mid_y = (y0 + y1) / 2
 
-        edge_trace = go.Scatter(
-            x=edge_x, y=edge_y,
-            line=dict(width=1, color='#888'),
-            hoverinfo='none',
-            mode='lines'
-        )
+                annotation = dict(
+                    x=mid_x,
+                    y=mid_y,
+                    text=edge_label,
+                    showarrow=False,
+                    font=dict(size=9, color='#555'),
+                    bgcolor='rgba(255, 255, 255, 0.8)',
+                    borderpad=2
+                )
+                edge_annotations.append(annotation)
 
+        # Raccolta tipi entità unici per generazione colori dinamica
+        entity_types = set()
+        for node in G.nodes():
+            node_type = G.nodes[node].get('node_type', 'Entity')
+            if node_type != 'person':  # Escludi il nodo root Person
+                entity_types.add(node_type)
+
+        # Genera color map dinamica
+        import colorsys
+        color_map = {'person': '#4A90E2'}  # Person root sempre blu
+
+        # Genera colori per ogni tipo di entità
+        num_types = len(entity_types)
+        for i, entity_type in enumerate(sorted(entity_types)):
+            # Usa HSV per distribuire colori uniformemente
+            hue = i / max(num_types, 1)
+            saturation = 0.7
+            value = 0.9
+            rgb = colorsys.hsv_to_rgb(hue, saturation, value)
+            hex_color = '#{:02x}{:02x}{:02x}'.format(int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
+            color_map[entity_type] = hex_color
+
+        # Traces per nodi
         node_x, node_y, node_text, node_color, node_size = [], [], [], [], []
-
-        color_map = {
-            'root': '#4A90E2', 'broader': '#7ED321',
-            'narrower': '#F5A623', 'triplet': '#E8E8E8', 'more': '#D3D3D3'
-        }
-        size_map = {
-            'root': 30, 'broader': 25, 'narrower': 20, 'triplet': 12, 'more': 10
-        }
 
         for node in G.nodes():
             x, y = pos[node]
             node_x.append(x)
             node_y.append(y)
             node_data = G.nodes[node]
-            node_text.append(node_data.get('label', node))
-            node_type = node_data.get('node_type', 'triplet')
-            node_color.append(color_map.get(node_type, '#888'))
-            node_size.append(size_map.get(node_type, 15))
+            label = node_data.get('label', node)
+            node_text.append(label)
+            node_type = node_data.get('node_type', 'Entity')
+            node_color.append(color_map.get(node_type, '#888888'))
+            node_size.append(node_data.get('size', 15))
 
         node_trace = go.Scatter(
             x=node_x, y=node_y,
             mode='markers+text',
             text=node_text,
             textposition="top center",
-            textfont=dict(size=10),
+            textfont=dict(size=11, family='Arial'),
             hoverinfo='text',
-            marker=dict(color=node_color, size=node_size, line=dict(width=2, color='white'))
+            marker=dict(color=node_color, size=node_size, line=dict(width=2, color='white')),
+            showlegend=False
         )
 
-        fig = go.Figure(data=[edge_trace, node_trace],
+        # Combina tutti i traces (archi + nodi)
+        all_traces = edge_traces + [node_trace]
+
+        fig = go.Figure(data=all_traces,
                        layout=go.Layout(
                            title=dict(text='Knowledge Graph Structure (Neo4j)', font=dict(size=16)),
                            showlegend=False,
@@ -358,10 +572,43 @@ class Neo4jKnowledgeGraph:
                            margin=dict(b=20, l=5, r=5, t=40),
                            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                           height=600
+                           height=700,
+                           annotations=edge_annotations  # Aggiungi le annotazioni delle label
                        ))
 
         return fig
+
+    def get_entity_types_legend(self) -> Dict[str, str]:
+        """
+        Ritorna i tipi di entità presenti nel grafo con i loro colori.
+
+        Returns:
+            Dict con {entity_type: hex_color}
+        """
+        with self.driver.session(database=self.database) as session:
+            result = session.run("""
+                MATCH (person:Person {id: $person_id})-[:KNOWS]->(n)
+                WHERE n.person_id = $person_id
+                RETURN DISTINCT labels(n)[0] AS entity_type
+                ORDER BY entity_type
+            """, person_id=self.person_id)
+
+            entity_types = [record["entity_type"] for record in result]
+
+            # Genera gli stessi colori del grafo
+            import colorsys
+            color_map = {}
+
+            num_types = len(entity_types)
+            for i, entity_type in enumerate(sorted(entity_types)):
+                hue = i / max(num_types, 1)
+                saturation = 0.7
+                value = 0.9
+                rgb = colorsys.hsv_to_rgb(hue, saturation, value)
+                hex_color = '#{:02x}{:02x}{:02x}'.format(int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
+                color_map[entity_type] = hex_color
+
+            return color_map
 
 
 # ==================== IN-MEMORY STORAGE (Fallback) ====================
@@ -377,6 +624,29 @@ class InMemoryKnowledgeGraph:
     def __init__(self):
         # Structure: {broader_topic: {narrower_topic: [triplets]}}
         self.graph: Dict[str, Dict[str, List[Dict]]] = {}
+
+    def get_all_broader_topics(self) -> List[str]:
+        """
+        Ritorna tutti i broader topics esistenti nel grafo.
+
+        Returns:
+            Lista di nomi dei broader topics
+        """
+        return sorted(list(self.graph.keys()))
+
+    def get_narrower_topics_for_broader(self, broader_topic: str) -> List[str]:
+        """
+        Ritorna tutti i narrower topics per un dato broader topic.
+
+        Args:
+            broader_topic: Broad topic
+
+        Returns:
+            Lista di nomi dei narrower topics
+        """
+        if broader_topic not in self.graph:
+            return []
+        return sorted(list(self.graph[broader_topic].keys()))
 
     def topic_exists(self, broader_topic: str, narrower_topic: str = None) -> bool:
         """
@@ -732,12 +1002,13 @@ class KnowledgeGraphBuilder:
         self.graph = self._build_graph()
 
     def _build_graph(self) -> StateGraph:
-        """Costruisce il grafo LangGraph."""
+        """Costruisce il grafo LangGraph con matching semantico LLM."""
         workflow = StateGraph(KGBuilderState)
 
         # Nodi
         workflow.add_node("generate_topics", self._generate_topics_node)
-        workflow.add_node("check_topics_exist", self._check_topics_exist_node)
+        workflow.add_node("match_broader_topic", self._match_broader_topic_node)
+        workflow.add_node("match_narrower_topic", self._match_narrower_topic_node)
         workflow.add_node("store_triplet", self._store_triplet_node)
 
         # Entry point
@@ -748,13 +1019,17 @@ class KnowledgeGraphBuilder:
             "generate_topics",
             self._check_triplet_valid,
             {
-                "valid": "check_topics_exist",
+                "valid": "match_broader_topic",  # Matcha il broader topic
                 "skip": "generate_topics",  # Retry con prossima tripletta
                 "end": END  # Fine se non ci sono più triplette
             }
         )
 
-        workflow.add_edge("check_topics_exist", "store_triplet")
+        # Da match_broader_topic -> match_narrower_topic
+        workflow.add_edge("match_broader_topic", "match_narrower_topic")
+
+        # Da match_narrower_topic -> store_triplet
+        workflow.add_edge("match_narrower_topic", "store_triplet")
 
         # Conditional: continua con prossima tripletta o termina
         workflow.add_conditional_edges(
@@ -766,7 +1041,12 @@ class KnowledgeGraphBuilder:
             }
         )
 
-        return workflow.compile()
+        return workflow.compile(
+            checkpointer=None,
+            interrupt_before=None,
+            interrupt_after=None,
+            debug=False
+        )
 
     # ==================== NODES ====================
 
@@ -847,7 +1127,7 @@ class KnowledgeGraphBuilder:
 
             logger.info(f"Generated topics for triplet {idx}: {result.broader_topic} → {result.narrower_topic}")
 
-            # Aggiungi metadata alla tripletta
+            # Aggiungi metadata alla tripletta (topic LLM generati, non ancora matchati)
             triplet_with_topics = {
                 **triplet,
                 "broader_topic": result.broader_topic,
@@ -857,7 +1137,9 @@ class KnowledgeGraphBuilder:
 
             return {
                 **state,
-                "current_processed_triplet": triplet_with_topics
+                "current_processed_triplet": triplet_with_topics,
+                "matched_broader_topic": None,  # Reset per nuova tripletta
+                "matched_narrower_topic": None  # Reset per nuova tripletta
             }
 
         except Exception as e:
@@ -874,46 +1156,182 @@ class KnowledgeGraphBuilder:
                 "current_triplet_index": idx + 1
             }
 
-    def _check_topics_exist_node(self, state: KGBuilderState) -> KGBuilderState:
+    def _match_broader_topic_node(self, state: KGBuilderState) -> KGBuilderState:
         """
-        Verifica se i topic esistono già nel KG.
+        Usa LLM per matchare il broader topic generato con i topic esistenti.
 
-        Implementa la logica da Instructions.md:
-        - Se broader_topic esiste: usa quello, altrimenti crea
-        - Se narrower_topic esiste sotto quel broader: usa quello, altrimenti crea
+        Returns state con matched_broader_topic impostato.
         """
         triplet = state.get("current_processed_triplet", {})
-
         if not triplet:
             return state
 
-        broader = triplet.get("broader_topic")
-        narrower = triplet.get("narrower_topic")
-
-        if not broader or not narrower:
+        generated_broader = triplet.get("broader_topic")
+        if not generated_broader:
             return state
 
-        # Check esistenza
-        broader_exists = self.storage.topic_exists(broader)
-        narrower_exists = self.storage.topic_exists(broader, narrower)
+        # Recupera tutti i broader topics esistenti
+        existing_broader_topics = self.storage.get_all_broader_topics()
 
-        # Aggiungi metadata
-        triplet["topic_metadata"] = {
-            "broader_exists": broader_exists,
-            "narrower_exists": narrower_exists,
-            "action": "reuse" if narrower_exists else "create_narrower" if broader_exists else "create_both"
-        }
+        if not existing_broader_topics:
+            # Nessun topic esistente, questo sarà il primo
+            logger.info(f"No existing broader topics, creating new: {generated_broader}")
+            return {
+                **state,
+                "matched_broader_topic": None  # None = crea nuovo
+            }
 
-        logger.info(f"Topic check: broader={broader} (exists={broader_exists}), narrower={narrower} (exists={narrower_exists})")
+        # Chiedi all'LLM se c'è un match semantico
+        try:
+            messages_dict = self.prompt_manager.build_messages(
+                'kg_topic_matching',
+                new_topic=generated_broader,
+                existing_topics=", ".join(existing_broader_topics),
+                topic_type="broader"
+            )
 
-        return {
-            **state,
-            "current_processed_triplet": triplet
-        }
+            messages = []
+            for msg in messages_dict:
+                if msg['role'] == 'system':
+                    messages.append(SystemMessage(content=msg['content']))
+                elif msg['role'] == 'user':
+                    messages.append(HumanMessage(content=msg['content']))
+
+            # Usa invoke normale e parse JSON dalla risposta
+            # with_structured_output() non funziona bene con Groq per i boolean
+            response = self.llm.invoke(messages)
+
+            import json
+            response_text = response.content.strip()
+
+            # Rimuovi markdown code blocks se presenti
+            if response_text.startswith('```'):
+                lines = response_text.split('\n')
+                response_text = '\n'.join(lines[1:-1])
+
+            result_dict = json.loads(response_text)
+
+            # Crea oggetto TopicMatchResult con validazione Pydantic
+            result = TopicMatchResult(
+                match_found=result_dict['match_found'],
+                matched_topic=result_dict.get('matched_topic') or '',  # None → ''
+                reasoning=result_dict.get('reasoning') or ''
+            )
+
+            if result.match_found:
+                logger.info(f"Broader topic match: '{generated_broader}' → '{result.matched_topic}' (reason: {result.reasoning})")
+                return {
+                    **state,
+                    "matched_broader_topic": result.matched_topic
+                }
+            else:
+                logger.info(f"No broader topic match for '{generated_broader}', creating new (reason: {result.reasoning})")
+                return {
+                    **state,
+                    "matched_broader_topic": None
+                }
+
+        except Exception as e:
+            logger.error(f"Error matching broader topic: {str(e)}")
+            # In caso di errore, crea nuovo topic per sicurezza
+            return {
+                **state,
+                "matched_broader_topic": None
+            }
+
+    def _match_narrower_topic_node(self, state: KGBuilderState) -> KGBuilderState:
+        """
+        Usa LLM per matchare il narrower topic generato con i topic esistenti
+        sotto il broader topic (matchato o nuovo).
+
+        Returns state con matched_narrower_topic impostato.
+        """
+        triplet = state.get("current_processed_triplet", {})
+        if not triplet:
+            return state
+
+        generated_narrower = triplet.get("narrower_topic")
+        if not generated_narrower:
+            return state
+
+        # Determina quale broader topic usare
+        matched_broader = state.get("matched_broader_topic")
+        generated_broader = triplet.get("broader_topic")
+
+        broader_to_use = matched_broader if matched_broader is not None else generated_broader
+
+        # Recupera i narrower topics per questo broader
+        existing_narrower_topics = self.storage.get_narrower_topics_for_broader(broader_to_use)
+
+        if not existing_narrower_topics:
+            # Nessun narrower topic esistente sotto questo broader
+            logger.info(f"No existing narrower topics under '{broader_to_use}', creating new: {generated_narrower}")
+            return {
+                **state,
+                "matched_narrower_topic": None
+            }
+
+        # Chiedi all'LLM se c'è un match semantico
+        try:
+            messages_dict = self.prompt_manager.build_messages(
+                'kg_topic_matching',
+                new_topic=generated_narrower,
+                existing_topics=", ".join(existing_narrower_topics),
+                topic_type="narrower"
+            )
+
+            messages = []
+            for msg in messages_dict:
+                if msg['role'] == 'system':
+                    messages.append(SystemMessage(content=msg['content']))
+                elif msg['role'] == 'user':
+                    messages.append(HumanMessage(content=msg['content']))
+
+            # Usa invoke normale e parse JSON dalla risposta
+            # with_structured_output() non funziona bene con Groq per i boolean
+            response = self.llm.invoke(messages)
+
+            import json
+            response_text = response.content.strip()
+
+            # Rimuovi markdown code blocks se presenti
+            if response_text.startswith('```'):
+                lines = response_text.split('\n')
+                response_text = '\n'.join(lines[1:-1])
+
+            result_dict = json.loads(response_text)
+
+            # Crea oggetto TopicMatchResult con validazione Pydantic
+            result = TopicMatchResult(
+                match_found=result_dict['match_found'],
+                matched_topic=result_dict.get('matched_topic') or '',  # None → ''
+                reasoning=result_dict.get('reasoning') or ''
+            )
+
+            if result.match_found:
+                logger.info(f"Narrower topic match: '{generated_narrower}' → '{result.matched_topic}' (reason: {result.reasoning})")
+                return {
+                    **state,
+                    "matched_narrower_topic": result.matched_topic
+                }
+            else:
+                logger.info(f"No narrower topic match for '{generated_narrower}', creating new (reason: {result.reasoning})")
+                return {
+                    **state,
+                    "matched_narrower_topic": None
+                }
+
+        except Exception as e:
+            logger.error(f"Error matching narrower topic: {str(e)}")
+            # In caso di errore, crea nuovo topic per sicurezza
+            return {
+                **state,
+                "matched_narrower_topic": None
+            }
 
     def _store_triplet_node(self, state: KGBuilderState) -> KGBuilderState:
         """
-        Salva la tripletta nel Knowledge Graph storage e la aggiunge alla lista finale.
+        Salva la tripletta nel Knowledge Graph storage usando i topic matchati.
         """
         idx = state["current_triplet_index"]
         triplet = state.get("current_processed_triplet", {})
@@ -925,10 +1343,18 @@ class KnowledgeGraphBuilder:
                 "current_triplet_index": idx + 1
             }
 
-        broader = triplet.get("broader_topic")
-        narrower = triplet.get("narrower_topic")
+        # Usa i topic matchati (o i generati se non c'è match)
+        generated_broader = triplet.get("broader_topic")
+        generated_narrower = triplet.get("narrower_topic")
 
-        if not broader or not narrower:
+        matched_broader = state.get("matched_broader_topic")
+        matched_narrower = state.get("matched_narrower_topic")
+
+        # Determina i topic finali
+        final_broader = matched_broader if matched_broader is not None else generated_broader
+        final_narrower = matched_narrower if matched_narrower is not None else generated_narrower
+
+        if not final_broader or not final_narrower:
             logger.warning(f"Triplet {idx} missing topics, skipping storage")
             new_errors = state["errors"].copy()
             new_errors.append(f"Triplet {idx}: Missing broader/narrower topics")
@@ -939,14 +1365,29 @@ class KnowledgeGraphBuilder:
             }
 
         try:
-            # Salva nel storage
-            self.storage.add_triplet(triplet, broader, narrower)
+            # Aggiorna la tripletta con i topic finali
+            triplet_to_store = {
+                **triplet,
+                "broader_topic": final_broader,
+                "narrower_topic": final_narrower,
+                "topic_metadata": {
+                    "generated_broader": generated_broader,
+                    "generated_narrower": generated_narrower,
+                    "matched_broader": matched_broader,
+                    "matched_narrower": matched_narrower,
+                    "broader_was_merged": matched_broader is not None,
+                    "narrower_was_merged": matched_narrower is not None
+                }
+            }
 
-            logger.info(f"Stored triplet {idx} in KG")
+            # Salva nel storage
+            self.storage.add_triplet(triplet_to_store, final_broader, final_narrower)
+
+            logger.info(f"Stored triplet {idx} in KG: {final_broader} → {final_narrower}")
 
             # Aggiungi alla lista finale
             new_processed = state["processed_triplets"].copy()
-            new_processed.append(triplet)
+            new_processed.append(triplet_to_store)
 
             return {
                 **state,
@@ -1031,14 +1472,16 @@ class KnowledgeGraphBuilder:
             "current_processed_triplet": {},
             "processed_triplets": [],
             "existing_topics": self.storage.get_all_topics(),
-            "errors": []
+            "errors": [],
+            "matched_broader_topic": None,
+            "matched_narrower_topic": None
         }
 
         try:
             # Esegui il grafo
             logger.info(f"Starting KG build for {len(triplets)} triplets")
 
-            final_state = self.graph.invoke(initial_state)
+            final_state = self.graph.invoke(initial_state,{"recursion_limit": 100})
 
             # Risultati
             result = {
